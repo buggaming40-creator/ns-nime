@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,11 +44,34 @@ public class SearchFragment extends Fragment {
     private EditText input;
     private ProgressBar progress;
     private View emptyBox;
-    private TextView empty;
+    private TextView empty, searchCount;
     private LinearLayout recentsBox;
     private LinearLayout recentsList;
+    private LinearLayout genreRow;
     private View btnClear;
     private boolean searched;
+
+    /** Penjaga basi: hasil async dengan seq lama diabaikan. */
+    private int searchSeq;
+    /** Debounce pencarian otomatis 600 mdtk setelah teks berubah. */
+    private final Handler liveHandler = new Handler();
+    private final Runnable liveRun = new Runnable() {
+        @Override public void run() {
+            if (input == null || !isAdded()) return;
+            String q = input.getText().toString().trim();
+            if (q.length() >= 3) doSearch();
+        }
+    };
+
+    /** Genre populer di baris Cari; dialog "Lainnya" memuat 16 genre. */
+    private static final String[] GENRE_POPULAR = {
+            "Action", "Adventure", "Comedy", "Romance",
+            "Fantasy", "Drama", "Horror", "Mystery"};
+    private static final String[] GENRE_ALL = {
+            "Action", "Adventure", "Comedy", "Romance",
+            "Fantasy", "Drama", "Horror", "Mystery",
+            "Avant Garde", "Award Winning", "Shoujo", "Shounen",
+            "Slice of Life", "Sports", "Supernatural", "Suspense"};
 
     @Nullable @Override
     public View onCreateView(@NonNull LayoutInflater inf, @Nullable ViewGroup grp,
@@ -62,6 +87,8 @@ public class SearchFragment extends Fragment {
         ImageView emptyIcon = v.findViewById(R.id.emptyIcon);
         recentsBox = v.findViewById(R.id.recentsBox);
         recentsList = v.findViewById(R.id.recentsList);
+        searchCount = v.findViewById(R.id.searchCount);
+        genreRow = v.findViewById(R.id.genreRow);
         RecyclerView rv = v.findViewById(R.id.recycler);
 
         // Hapus seluruh riwayat pencarian (kunci disimpan di Prefs.recents).
@@ -95,9 +122,22 @@ public class SearchFragment extends Fragment {
         input.addTextChangedListener(new SimpleTextWatcher() {
             @Override public void onTextChanged(CharSequence s) {
                 btnClear.setVisibility(s != null && s.length() > 0 ? View.VISIBLE : View.GONE);
+                // Pencarian otomatis: debounce 600 mdtk bila >=3 huruf;
+                // teks dikosongkan = kembali ke awal (recents).
+                liveHandler.removeCallbacks(liveRun);
+                int len = s == null ? 0 : s.toString().trim().length();
+                if (len == 0) {
+                    searched = false;
+                    adapter.submit(null);
+                    hideCount();
+                    showRecents();
+                } else if (len >= 3) {
+                    liveHandler.postDelayed(liveRun, 600);
+                }
             }
         });
 
+        buildGenreRow();
         showRecents();
         return v;
     }
@@ -111,7 +151,15 @@ public class SearchFragment extends Fragment {
             input.setText(pendingQuery);
             pendingQuery = "";
             doSearch();
+            // Teks terisi memicu debounce — matikan agar tidak cari dobel.
+            liveHandler.removeCallbacks(liveRun);
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        liveHandler.removeCallbacks(liveRun);
+        super.onDestroyView();
     }
 
     private GridLayoutManager grid() {
@@ -134,21 +182,100 @@ public class SearchFragment extends Fragment {
         progress.setVisibility(View.VISIBLE);
         emptyBox.setVisibility(View.GONE);
 
+        final int seq = ++searchSeq;
         Async.go(() -> Oploverz.search(q), new Async.Done<List<AnimeItem>>() {
             @Override public void ok(List<AnimeItem> items) {
+                // Hasil basi (pencarian lebih baru sudah jalan) — abaikan.
+                if (!isAdded() || seq != searchSeq) return;
                 progress.setVisibility(View.GONE);
                 adapter.submit(items);
                 searched = true;
                 if (!items.isEmpty()) Prefs.addRecent(requireContext(), q);
                 showEmpty(items.isEmpty() ? R.string.empty_search2 : 0);
+                showCount(items.isEmpty() ? 0 : items.size(), q);
                 showRecents();
             }
 
             @Override public void err(Throwable t) {
+                if (!isAdded() || seq != searchSeq) return;
                 progress.setVisibility(View.GONE);
+                hideCount();
                 showEmpty(R.string.err_net);
             }
         });
+    }
+
+    /** Tampilkan "N hasil untuk 'q'"; sembunyi bila tidak ada hasil. */
+    private void showCount(int n, String q) {
+        if (searchCount == null) return;
+        if (n <= 0) {
+            searchCount.setVisibility(View.GONE);
+            return;
+        }
+        searchCount.setText(getString(R.string.search_count_fmt, n, q));
+        searchCount.setVisibility(View.VISIBLE);
+    }
+
+    private void hideCount() {
+        if (searchCount != null) searchCount.setVisibility(View.GONE);
+    }
+
+    // -------------------------------------------------------- indeks genre
+
+    /**
+     * Baris chip genre populer + "+ Lainnya" (dialog 16 genre). Ketuk chip
+     * langsung menjalankan pencarian genre tersebut.
+     */
+    private void buildGenreRow() {
+        if (genreRow == null || getContext() == null) return;
+        genreRow.removeAllViews();
+        for (final String g : GENRE_POPULAR) {
+            genreRow.addView(genreChip(g, () -> genreSearch(g)));
+        }
+        // Chip terakhir membuka dialog 16 genre.
+        genreRow.addView(genreChip("+ Lainnya", this::showMoreGenres));
+    }
+
+    /** Satu pil genre untuk baris jelajah. */
+    private View genreChip(String label, final Runnable action) {
+        MaterialButton chip = new MaterialButton(requireContext(), null,
+                com.google.android.material.R.attr.materialButtonOutlinedStyle);
+        chip.setText(label);
+        chip.setAllCaps(false);
+        chip.setTextSize(12);
+        chip.setMinHeight(0);
+        chip.setInsetTop(0);
+        chip.setInsetBottom(0);
+        chip.setCornerRadius(40);
+        chip.setStrokeColor(androidx.core.content.ContextCompat.getColorStateList(
+                requireContext(), R.color.ui_chip_stroke));
+        chip.setStrokeWidth(dp(1));
+        LinearLayout.LayoutParams lp =
+                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.setMarginEnd(16);
+        chip.setLayoutParams(lp);
+        chip.setOnClickListener(x -> { if (action != null) action.run(); });
+        return chip;
+    }
+
+    /** Isi kolom dengan genre lalu cari langsung. */
+    private void genreSearch(String genre) {
+        if (input == null || !isAdded()) return;
+        liveHandler.removeCallbacks(liveRun);
+        input.setText(genre);
+        input.setSelection(genre.length());
+        doSearch();
+    }
+
+    /** Dialog 16 genre netral — pilih = cari langsung. */
+    private void showMoreGenres() {
+        if (getContext() == null) return;
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.genre_browse)
+                .setItems(GENRE_ALL, (d, which) -> genreSearch(GENRE_ALL[which]))
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 
     private void showEmpty(int msg) {

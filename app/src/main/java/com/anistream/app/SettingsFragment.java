@@ -74,7 +74,7 @@ public class SettingsFragment extends Fragment {
 
     // Preferensi player (urutan chip = nilai Prefs.QUALITY_* / Prefs.RATIO_*).
     private Chip[] qualityChips, ratioChips;
-    private MaterialSwitch autoplaySwitch;
+    private MaterialSwitch autoplaySwitch, pipSwitch;
 
     @Nullable @Override
     public View onCreateView(@NonNull LayoutInflater inf, @Nullable ViewGroup grp,
@@ -149,6 +149,13 @@ public class SettingsFragment extends Fragment {
         autoplaySwitch.setOnClickListener(x -> {
             if (!isAdded()) return;
             Prefs.setPlayerAutoplay(requireContext(), autoplaySwitch.isChecked());
+        });
+
+        // Mini-player PiP — pola kabel sama dengan sakelar autoplay.
+        pipSwitch = v.findViewById(R.id.switchPip);
+        pipSwitch.setOnClickListener(x -> {
+            if (!isAdded()) return;
+            Prefs.setPlayerPip(requireContext(), pipSwitch.isChecked());
         });
 
         // ---- penyimpanan ----
@@ -348,6 +355,9 @@ public class SettingsFragment extends Fragment {
         }
         if (autoplaySwitch != null) {
             autoplaySwitch.setChecked(Prefs.playerAutoplay(requireContext()));
+        }
+        if (pipSwitch != null) {
+            pipSwitch.setChecked(Prefs.playerPip(requireContext()));
         }
     }
 

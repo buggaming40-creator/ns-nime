@@ -1,9 +1,11 @@
 package com.anistream.app;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,20 +36,39 @@ public class SeriesActivity extends AppCompatActivity {
 
     private String title = "", thumb = "", seriesUrl = "", statusText = "", pageUrl = "";
     private EpisodeAdapter adapter;
+    private RecyclerView recycler;
     private ProgressBar progress;
     private TextView empty, metaLine, synopsis, synToggle, epCount;
     private LinearLayout genreRow;
     private View synCard;
-    private ImageButton btnSort;
+    private ImageButton btnSort, btnView;
     private HistoryStore store;
     private BookmarkStore bookmarks;
     private ImageButton btnBookmark;
 
+    /** Kartu lanjutkan menonton (diisi dari riwayat judul ini). */
+    private View resumeCard;
+    private ImageView resumeThumb;
+    private TextView resumeLine;
+    private ProgressBar resumeProgress;
+    private HistoryItem resumeRow;
+
     /** false = terbaru dulu (bawaan situs); true = episode 1 dulu. */
     private boolean asc;
 
+    /** false = baris daftar; true = grid pil nomor. */
+    private boolean gridMode;
+
     /** Daftar episode hasil pemuatan — selalu dalam urutan tampil. */
     private final List<EpisodeItem> episodes = new ArrayList<>();
+
+    /** Tampilan setelah filter rentang (yang dibaca adapter + intent rel). */
+    private final List<EpisodeItem> displayed = new ArrayList<>();
+
+    /** Rentang nomor episode terpilih; -1/-1 = Semua. */
+    private int rangeStart = -1, rangeEnd = -1;
+    private View epRangeRow;
+    private LinearLayout epRangeList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +95,13 @@ public class SeriesActivity extends AppCompatActivity {
         synToggle = findViewById(R.id.synToggle);
         epCount = findViewById(R.id.epCount);
         btnSort = findViewById(R.id.btnSort);
+        btnView = findViewById(R.id.btnView);
+        epRangeRow = findViewById(R.id.epRangeRow);
+        epRangeList = findViewById(R.id.epRangeList);
+        resumeCard = findViewById(R.id.resumeCard);
+        resumeThumb = findViewById(R.id.resumeThumb);
+        resumeLine = findViewById(R.id.resumeLine);
+        resumeProgress = findViewById(R.id.resumeProgress);
 
         store = new HistoryStore(this);
         bookmarks = new BookmarkStore(this);
@@ -94,6 +123,14 @@ public class SeriesActivity extends AppCompatActivity {
         });
         syncSortButton();
 
+        // Ganti tampilan baris/grid daftar episode.
+        if (btnView != null) {
+            btnView.setOnClickListener(v -> {
+                gridMode = !gridMode;
+                applyViewMode();
+            });
+        }
+
         if (synToggle != null) {
             synToggle.setOnClickListener(v -> {
                 boolean open = synopsis.getMaxLines() != Integer.MAX_VALUE;
@@ -105,9 +142,11 @@ public class SeriesActivity extends AppCompatActivity {
         }
 
         RecyclerView rv = findViewById(R.id.recycler);
+        recycler = rv;
         adapter = new EpisodeAdapter(this::askEpisode);
         rv.setLayoutManager(new LinearLayoutManager(this));
         rv.setAdapter(adapter);
+        applyViewMode();
 
         if (url == null || url.isEmpty()) {
             progress.setVisibility(View.GONE);
@@ -142,6 +181,8 @@ public class SeriesActivity extends AppCompatActivity {
                 episodes.clear();
                 episodes.addAll(s.episodes);
                 sortEpisodes();
+                buildRangeChips();
+                refreshResume();
                 epCount.setText(getString(R.string.episode_count_fmt, episodes.size()));
 
                 if (episodes.isEmpty()) {
@@ -232,7 +273,24 @@ public class SeriesActivity extends AppCompatActivity {
         episodes.sort((a, b) -> asc
                 ? Integer.compare(epInt(a.num), epInt(b.num))
                 : Integer.compare(epInt(b.num), epInt(a.num)));
-        if (adapter != null) adapter.submit(new ArrayList<>(episodes));
+        applyRangeFilter();
+    }
+
+    /** Saring `episodes` (penuh, sudah diurut) ke `displayed` sesuai rentang. */
+    private void applyRangeFilter() {
+        displayed.clear();
+        boolean all = rangeStart < 0;
+        for (EpisodeItem e : episodes) {
+            if (all || rangePass(e)) displayed.add(e);
+        }
+        if (adapter != null) adapter.submit(new ArrayList<>(displayed));
+    }
+
+    /** Nomor tak terbaca selalu lolos; yang terbaca harus masuk rentang. */
+    private boolean rangePass(EpisodeItem e) {
+        int n = epIntOr(e == null ? null : e.num, -1);
+        if (n < 0) return true;
+        return n >= rangeStart && n <= rangeEnd;
     }
 
     private void syncSortButton() {
@@ -240,6 +298,122 @@ public class SeriesActivity extends AppCompatActivity {
         btnSort.setContentDescription(getString(
                 asc ? R.string.sort_newest : R.string.sort_oldest));
         btnSort.setAlpha(asc ? 1f : 0.55f);
+    }
+
+    // ------------------------------------------------------- tampilan grid/list
+
+    /** Terapkan mode baris/grid ke adapter + layout manager + ikon tombol. */
+    private void applyViewMode() {
+        if (adapter != null) adapter.setGrid(gridMode);
+        if (recycler != null) {
+            if (gridMode) {
+                boolean land = getResources().getConfiguration().orientation
+                        == Configuration.ORIENTATION_LANDSCAPE;
+                recycler.setLayoutManager(new GridLayoutManager(this, land ? 6 : 4));
+            } else {
+                recycler.setLayoutManager(new LinearLayoutManager(this));
+            }
+        }
+        syncViewButton();
+    }
+
+    private void syncViewButton() {
+        if (btnView == null) return;
+        // Ikon menunjukkan tampilan TUJUAN: grid saat mode baris, sebaliknya.
+        btnView.setImageResource(gridMode ? R.drawable.ic_list : R.drawable.ic_grid);
+        btnView.setAlpha(gridMode ? 1f : 0.55f);
+    }
+
+    // ------------------------------------------------------- rentang episode
+
+    /**
+     * Chip rentang "Semua | 1–25 | 26–50 …" per 25 nomor episode. Hanya
+     * ditampilkan bila seri panjang (>25 episode) dan ada lebih dari satu
+     * chip; nomor yang tak terbaca selalu lolos filter.
+     */
+    private void buildRangeChips() {
+        if (epRangeRow == null || epRangeList == null) return;
+        epRangeList.removeAllViews();
+        if (episodes.size() <= 25) {
+            epRangeRow.setVisibility(View.GONE);
+            rangeStart = -1;
+            rangeEnd = -1;
+            return;
+        }
+        int max = 0;
+        for (EpisodeItem e : episodes) {
+            int n = epIntOr(e.num, -1);
+            if (n > max) max = n;
+        }
+        List<int[]> ranges = new ArrayList<>();
+        for (int s = 1; s <= max; s += 25) {
+            ranges.add(new int[]{s, Math.min(s + 24, max)});
+        }
+        if (ranges.size() < 1) {
+            epRangeRow.setVisibility(View.GONE);
+            rangeStart = -1;
+            rangeEnd = -1;
+            return;
+        }
+        epRangeRow.setVisibility(View.VISIBLE);
+        // Selalu ada chip "Semua" di urutan pertama.
+        addRangeChip(getString(R.string.range_all), -1, -1);
+        for (int[] r : ranges) {
+            addRangeChip(r[0] + "\u2013" + r[1], r[0], r[1]);
+        }
+        syncRangeUi();
+    }
+
+    private void addRangeChip(String label, final int start, final int end) {
+        TextView c = new TextView(this);
+        c.setText(label);
+        c.setTextSize(12);
+        c.setTypeface(null, android.graphics.Typeface.BOLD);
+        c.setPadding(dp(14), dp(7), dp(14), dp(7));
+        c.setTag(new int[]{start, end});
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.setMarginEnd(dp(8));
+        epRangeList.addView(c, lp);
+        c.setOnClickListener(v -> {
+            rangeStart = start;
+            rangeEnd = end;
+            applyRangeFilter();
+            syncRangeUi();
+        });
+    }
+
+    /** Tandai chip terpilih (latar aksen) dan kembalikan sisanya ke pil biasa. */
+    private void syncRangeUi() {
+        if (epRangeList == null) return;
+        int onAccent = com.google.android.material.color.MaterialColors.getColor(
+                epRangeList, com.google.android.material.R.attr.colorOnPrimary);
+        int idle;
+        try {
+            idle = getColor(R.color.text_secondary);
+        } catch (Throwable t) {
+            idle = 0xFF888888;
+        }
+        for (int i = 0; i < epRangeList.getChildCount(); i++) {
+            View child = epRangeList.getChildAt(i);
+            if (!(child instanceof TextView)) continue;
+            TextView c = (TextView) child;
+            int[] tag = (int[]) c.getTag();
+            boolean sel = tag != null && tag[0] == rangeStart && tag[1] == rangeEnd;
+            c.setBackgroundResource(sel ? R.drawable.bg_badge : R.drawable.ui_bg_pill);
+            c.setTextColor(sel ? onAccent : idle);
+        }
+    }
+
+    private static int epIntOr(String num, int fallback) {
+        if (num == null) return fallback;
+        Matcher m = EP_INT.matcher(num);
+        if (m.find()) {
+            try { return Integer.parseInt(m.group(1)); } catch (NumberFormatException ignored) {
+            }
+        }
+        return fallback;
     }
 
     private static int epInt(String num) {
@@ -321,11 +495,84 @@ public class SeriesActivity extends AppCompatActivity {
         String key = bookmarkKey();
         if (key.isEmpty()) return;
 
+        // Sudah tersimpan → lepas langsung seperti semula.
+        if (bookmarks.has(key)) {
+            bookmarks.toggle(key, title, thumb, "", 0);
+            syncBookmarkButton();
+            return;
+        }
+        showSaveSheet(key);
+    }
+
+    /**
+     * Lembar "Simpan ke": pilih kategori sekali ketuk + tombol simpan, atau
+     * "+ Kategori baru" untuk membuat kategori lalu menyimpan ke sana.
+     */
+    private void showSaveSheet(final String key) {
+        List<BookmarkStore.Cat> all = bookmarks.cats();
+        final List<BookmarkStore.Cat> real = new ArrayList<>();
+        for (BookmarkStore.Cat c : all) {
+            if (c != null && c.id != BookmarkStore.CAT_ALL_ID) real.add(c);
+        }
+        if (real.isEmpty()) {
+            // Tanpa tabel kategori (DB sangat lama) — simpan polos.
+            saveBookmark(key, 0);
+            return;
+        }
+        final String[] names = new String[real.size() + 1];
+        int checked = 0;
+        for (int i = 0; i < real.size(); i++) {
+            names[i] = real.get(i).name;
+            if ("Favorit".equals(real.get(i).name)) checked = i;
+        }
+        names[real.size()] = getString(R.string.new_category);
+        final int[] pick = {checked};
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.save_to_title)
+                .setSingleChoiceItems(names, checked, (d, which) -> {
+                    if (which == real.size()) {
+                        // Baris "+ Kategori baru" — buka dialog nama.
+                        d.dismiss();
+                        showNewCatDialog(key);
+                    } else {
+                        pick[0] = which;
+                    }
+                })
+                .setPositiveButton(R.string.bookmark_add, (d, w) -> {
+                    int at = Math.max(0, Math.min(pick[0], real.size() - 1));
+                    saveBookmark(key, real.get(at).id);
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    /** Dialog nama kategori baru (maks 20 huruf) lalu simpan ke sana. */
+    private void showNewCatDialog(final String key) {
+        final EditText ed = new EditText(this);
+        ed.setHint(R.string.new_category_hint);
+        ed.setSingleLine();
+        int pad = dp(4);
+        ed.setPadding(pad, pad, pad, pad);
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.new_category)
+                .setView(ed)
+                .setPositiveButton(R.string.bookmark_add, (d, w) -> {
+                    long id = bookmarks.addCat(ed.getText().toString());
+                    if (id < 0) return;
+                    saveBookmark(key, id);
+                })
+                .setNegativeButton(R.string.cancel,
+                        (d, w) -> showSaveSheet(key))
+                .show();
+    }
+
+    /** Tulis bookmark + kategori lalu segarkan ikon. */
+    private void saveBookmark(String key, long catId) {
         int siteCount = episodes.size();
         if (siteCount <= 0) siteCount = BookmarkStore.parseCount(statusText);
         String status = BookmarkStore.buildStatus(statusText, siteCount);
-
-        bookmarks.toggle(key, title, thumb, status, siteCount);
+        bookmarks.save(key, title, thumb, status, siteCount, catId);
         syncBookmarkButton();
     }
 
@@ -387,22 +634,99 @@ public class SeriesActivity extends AppCompatActivity {
     }
 
     private int indexOf(String url) {
-        for (int n = 0; n < episodes.size(); n++) {
-            if (url != null && url.equals(episodes.get(n).url)) return n;
+        for (int n = 0; n < displayed.size(); n++) {
+            if (url != null && url.equals(displayed.get(n).url)) return n;
         }
         return -1;
     }
 
     private ArrayList<String> extractUrls() {
         ArrayList<String> out = new ArrayList<>();
-        for (EpisodeItem e : episodes) out.add(e.url);
+        for (EpisodeItem e : displayed) out.add(e.url);
         return out;
     }
 
     private ArrayList<String> extractTitles() {
         ArrayList<String> out = new ArrayList<>();
-        for (EpisodeItem e : episodes) out.add(e.title);
+        for (EpisodeItem e : displayed) out.add(e.title);
         return out;
+    }
+
+    // ------------------------------------------------------- lanjutkan nonton
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Riwayat bisa bertambah dari player — segarkan kartu + tombol simpan.
+        refreshResume();
+        syncBookmarkButton();
+    }
+
+    /**
+     * Kartu "Lanjutkan Menonton": baris riwayat terbaru milik judul ini
+     * (cocok series_url, daftar riwayat sudah watched_at DESC). Ketuk kartu /
+     * tombol Lanjut memutar baris itu persis seperti openEpisode (posisi
+     * resume + daftar rel dari `displayed`).
+     */
+    private void refreshResume() {
+        if (resumeCard == null || store == null) return;
+        String key = bookmarkKey();
+        HistoryItem best = null;
+        if (!key.isEmpty()) {
+            for (HistoryItem h : store.all()) {
+                if (h != null && key.equals(h.seriesUrl)) { best = h; break; }
+            }
+        }
+        resumeRow = best;
+        if (best == null) {
+            resumeCard.setVisibility(View.GONE);
+            return;
+        }
+        resumeCard.setVisibility(View.VISIBLE);
+        if (resumeThumb != null && !thumb.isEmpty()) ImageLoader.load(thumb, resumeThumb);
+        if (resumeLine != null) {
+            String num = resumeNumOf(best);
+            resumeLine.setText(getString(R.string.resume_line_fmt,
+                    num, Utils.clock(best.posMs), Utils.clock(best.durMs)));
+        }
+        if (resumeProgress != null) {
+            resumeProgress.setMax(100);
+            resumeProgress.setProgress(best.percent());
+        }
+        View.OnClickListener go = v -> playResume();
+        resumeCard.setOnClickListener(go);
+        View btn = findViewById(R.id.resumeGo);
+        if (btn != null) btn.setOnClickListener(go);
+    }
+
+    /** Nomor episode untuk baris resume (dari daftar, atau judul bila tak ada). */
+    private String resumeNumOf(HistoryItem h) {
+        for (EpisodeItem e : episodes) {
+            if (e != null && h.epUrl != null && h.epUrl.equals(e.url)
+                    && e.num != null && !e.num.isEmpty()) {
+                return e.num;
+            }
+        }
+        return h.epTitle == null || h.epTitle.isEmpty() ? "?" : h.epTitle;
+    }
+
+    /** Putar baris resume lewat jalur openEpisode yang sama. */
+    private void playResume() {
+        if (resumeRow == null) return;
+        EpisodeItem found = null;
+        for (EpisodeItem e : episodes) {
+            if (e != null && resumeRow.epUrl != null && resumeRow.epUrl.equals(e.url)) {
+                found = e;
+                break;
+            }
+        }
+        if (found == null) {
+            // URL tak ada di daftar situs — putar tanpa tambahan rel.
+            found = new EpisodeItem(
+                    resumeRow.epTitle == null ? "" : resumeRow.epTitle,
+                    resumeRow.epUrl == null ? "" : resumeRow.epUrl, "", "");
+        }
+        openEpisode(found);
     }
 
     private int dp(float v) {

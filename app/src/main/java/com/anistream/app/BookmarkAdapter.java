@@ -24,8 +24,14 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.VH> {
 
     private final List<BookmarkItem> data = new ArrayList<>();
     private final OnClick click;
+    /** Nama kategori per id (dari fragment); label sembunyi bila kosong. */
+    private java.util.Map<Long, String> catNames = new java.util.HashMap<>();
 
     public BookmarkAdapter(OnClick click) { this.click = click; }
+
+    public void setCatNames(java.util.Map<Long, String> names) {
+        catNames = names == null ? new java.util.HashMap<>() : names;
+    }
 
     public void submit(List<BookmarkItem> items) {
         data.clear();
@@ -46,6 +52,11 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.VH> {
         h.status.setVisibility(it.status.isEmpty() ? View.GONE : View.VISIBLE);
         // Lencana hanya bila jumlah episode situs melebihi yang sudah dilihat.
         h.newEp.setVisibility(it.hasNewEpisode() ? View.VISIBLE : View.GONE);
+        // Subjudul kategori: sekunder, sembunyi bila kosong / tanpa kategori.
+        String cn = catNames.get(it.catId);
+        boolean showCat = cn != null && !cn.isEmpty() && it.catId > 0;
+        h.catName.setText(showCat ? cn : "");
+        h.catName.setVisibility(showCat ? View.VISIBLE : View.GONE);
         ImageLoader.load(it.thumb, h.thumb);
 
         h.itemView.setOnClickListener(v -> { if (click != null) click.onOpen(it); });
@@ -56,7 +67,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.VH> {
 
     static class VH extends RecyclerView.ViewHolder {
         final ImageView thumb;
-        final TextView title, status, newEp;
+        final TextView title, status, newEp, catName;
         final View btnDelete;
         VH(@NonNull View v) {
             super(v);
@@ -64,6 +75,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.VH> {
             title = v.findViewById(R.id.title);
             status = v.findViewById(R.id.status);
             newEp = v.findViewById(R.id.uiNewEp);
+            catName = v.findViewById(R.id.catName);
             btnDelete = v.findViewById(R.id.uiDelete);
         }
     }

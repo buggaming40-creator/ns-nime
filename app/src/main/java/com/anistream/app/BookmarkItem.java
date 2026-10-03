@@ -18,6 +18,9 @@ public class BookmarkItem {
     public long addedAt;
     public long updatedAt;
 
+    /** Id kategori (baris cat); 0 = tanpa kategori. */
+    public long catId;
+
     /**
      * Jumlah episode yang terbaca dari kolom `status` (hasil parse, bukan
      * kolom terpisah — lihat {@link BookmarkStore#parseCount(String)}).

@@ -106,6 +106,7 @@ public final class Prefs {
     private static final String KEY_PLAYER_AUTOPLAY = "player_autoplay";
     private static final String KEY_PLAYER_RATIO = "player_ratio";
     private static final String KEY_PLAYER_SPEED = "player_speed";
+    private static final String KEY_PLAYER_PIP = "player_pip";
 
     /** Kecepatan putar (bawaan 1x, batas 0,5–2x). */
     public static float playerSpeed(Context c) {
@@ -151,6 +152,15 @@ public final class Prefs {
     public static void setPlayerRatio(Context c, int ratio) {
         if (ratio < RATIO_FIT || ratio > RATIO_ZOOM) return;
         sp(c).edit().putInt(KEY_PLAYER_RATIO, ratio).apply();
+    }
+
+    /** Mini-player PiP saat keluar player selagi video berputar; nyala bawaan. */
+    public static boolean playerPip(Context c) {
+        return sp(c).getBoolean(KEY_PLAYER_PIP, true);
+    }
+
+    public static void setPlayerPip(Context c, boolean on) {
+        sp(c).edit().putBoolean(KEY_PLAYER_PIP, on).apply();
     }
 
     // ----------------------------------------------------------- pencarian
