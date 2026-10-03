@@ -23,8 +23,10 @@
 
     <!-- Riwayat -->
     <string name="history_title">Riwayat Tonton</string>
-    <string name="history_total">%1$s ditonton · %2$d episode</string>
+    <string name="history_total">%1$s ditonton · %2$d judul</string>
     <string name="history_total_none">Belum ada tontonan tersimpan</string>
+    <string name="episodes_nearby">Episode</string>
+    <string name="no_episodes">Daftar episode tidak tersedia</string>
     <string name="history_items_fmt">%1$d episode tersimpan</string>
     <string name="clear_all">Bersihkan</string>
     <string name="clear_history">Bersihkan riwayat tonton</string>

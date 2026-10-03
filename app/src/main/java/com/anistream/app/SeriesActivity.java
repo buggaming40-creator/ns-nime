@@ -54,6 +54,7 @@ public class SeriesActivity extends AppCompatActivity {
         ThemeUtils.apply(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_series);
+        hideSystemBars();
 
         Intent in = getIntent();
         String url = in.getStringExtra("url");
@@ -409,4 +410,26 @@ public class SeriesActivity extends AppCompatActivity {
     }
 
     private static String nz(String s) { return s == null ? "" : s; }
+
+    /** Layar penuh imersif: sembunyikan status bar + pil navigasi. Muncul
+     *  sementara hanya saat di-swipe (sticky immersive). Dipanggil ulang saat
+     *  fokus kembali karena swipe sistematik menampilkannya lagi. */
+    private void hideSystemBars() {
+        android.view.Window w = getWindow();
+        if (w == null) return;
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(w, false);
+        androidx.core.view.WindowInsetsControllerCompat c =
+                androidx.core.view.WindowCompat.getInsetsController(
+                        w, w.getDecorView());
+        if (c == null) return;
+        c.hide(androidx.core.view.WindowInsetsCompat.Type.systemBars());
+        c.setSystemBarsBehavior(androidx.core.view.WindowInsetsControllerCompat
+                .BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) hideSystemBars();
+    }
 }

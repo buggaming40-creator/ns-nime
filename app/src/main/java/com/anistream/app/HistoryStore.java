@@ -87,6 +87,13 @@ public class HistoryStore extends SQLiteOpenHelper {
         getWritableDatabase().delete("history", "id=?", new String[]{String.valueOf(id)});
     }
 
+    /** Hapus seluruh baris satu judul (cocok series_url maupun ep_url). */
+    public void deleteSeries(String key) {
+        if (key == null || key.isEmpty()) return;
+        getWritableDatabase().delete("history", "series_url=? OR ep_url=?",
+                new String[]{key, key});
+    }
+
     public void clear() {
         getWritableDatabase().delete("history", null, null);
     }

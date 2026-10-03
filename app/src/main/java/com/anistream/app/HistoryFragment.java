@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,11 +20,14 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.button.MaterialButton;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
- * Tab "Riwayat": daftar tontonan lengkap dengan menit yang sudah ditonton,
- * total akumulasi, progres bar, aksi lanjutkan dan bersihkan.
+ * Tab "Riwayat": satu kartu per JUDUL anime (bukan per episode) — judul,
+ * episode terakhir ditonton + menitnya, progres bar, total akumulasi, aksi
+ * Lanjutkan, daftar Episode terdekat, dan hapus satu judul/bersihkan semua.
  */
 public class HistoryFragment extends Fragment {
 
@@ -55,10 +59,12 @@ public class HistoryFragment extends Fragment {
         adapter = new HistoryAdapter(new HistoryAdapter.OnClick() {
             @Override public void onPlay(HistoryItem item) { play(item); }
 
-            @Override public void onDelete(HistoryItem item) {
-                store.delete(item.id);
+            @Override public void onDelete(HistoryGroup group) {
+                store.deleteSeries(group.key);
                 refresh();
             }
+
+            @Override public void onEpisodes(HistoryGroup group) { showNearby(group); }
         });
 
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -88,20 +94,42 @@ public class HistoryFragment extends Fragment {
         if (getView() == null) return;
 
         List<HistoryItem> items = store.all();
-        adapter.submit(items);
+        List<HistoryGroup> groups = groupByTitle(items);
+        adapter.submit(groups);
 
         long totalMs = 0;
         for (HistoryItem h : items) totalMs += h.posMs;
 
-        totalText.setText(items.isEmpty()
+        totalText.setText(groups.isEmpty()
                 ? getString(R.string.history_total_none)
-                : getString(R.string.history_total, Utils.minutes(totalMs), items.size()));
+                : getString(R.string.history_total, Utils.minutes(totalMs), groups.size()));
 
-        boolean none = items.isEmpty();
+        boolean none = groups.isEmpty();
         emptyBox.setVisibility(none ? View.VISIBLE : View.GONE);
         if (none) empty.setText(R.string.empty_history);
         progress.setVisibility(View.GONE);
         refresh.setRefreshing(false);
+    }
+
+    /** Kelompokkan baris episode per judul (terbaru dulu — daftar sudah DESC). */
+    static List<HistoryGroup> groupByTitle(List<HistoryItem> rows) {
+        LinkedHashMap<String, HistoryGroup> map = new LinkedHashMap<>();
+        if (rows == null) return new ArrayList<>();
+        for (HistoryItem h : rows) {
+            if (h == null) continue;
+            String key = h.seriesUrl != null && !h.seriesUrl.isEmpty()
+                    ? h.seriesUrl : (h.epUrl == null ? "" : h.epUrl);
+            if (key.isEmpty()) continue;
+            HistoryGroup g = map.get(key);
+            if (g == null) {
+                g = new HistoryGroup(key);
+                map.put(key, g);
+            }
+            if (g.title.isEmpty() && !h.title.isEmpty()) g.title = h.title;
+            if (g.thumb.isEmpty() && !h.thumb.isEmpty()) g.thumb = h.thumb;
+            g.rows.add(h);
+        }
+        return new ArrayList<>(map.values());
     }
 
     private void play(HistoryItem item) {
@@ -113,6 +141,107 @@ public class HistoryFragment extends Fragment {
         i.putExtra("thumb", item.thumb);
         i.putExtra("seriesUrl", item.seriesUrl);
         i.putExtra("pos", item.finished() ? 0L : item.posMs);
+        startActivity(i);
+    }
+
+    /**
+     * Episode terdekat: ambil daftar episode judul ini, tampilkan jendela
+     * ±2 sekitar episode terakhir ditonton (tanda ✓ = sudah ditonton,
+     * ▸ = posisi terakhir). Ketuk = putar dengan daftar rel lengkap.
+     */
+    private void showNearby(final HistoryGroup group) {
+        if (getContext() == null || group == null) return;
+        final HistoryItem cur = group.latest();
+        if (cur == null || cur.seriesUrl == null || cur.seriesUrl.isEmpty()) {
+            Toast.makeText(requireContext(),
+                    R.string.no_episodes, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        refresh.setRefreshing(true);
+        final String seriesUrl = cur.seriesUrl;
+        Async.go(() -> Oploverz.loadSeriesLite(seriesUrl),
+                new Async.Done<Oploverz.Series>() {
+                    @Override public void ok(Oploverz.Series s) {
+                        if (!isAdded()) return;
+                        refresh.setRefreshing(false);
+                        if (s == null || s.episodes.isEmpty()) {
+                            Toast.makeText(requireContext(),
+                                    R.string.no_episodes, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        openNearbyDialog(group, s.episodes, cur.epUrl);
+                    }
+
+                    @Override public void err(Throwable t) {
+                        if (!isAdded()) return;
+                        refresh.setRefreshing(false);
+                        Toast.makeText(requireContext(),
+                                R.string.err_net, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void openNearbyDialog(final HistoryGroup group,
+                                  final List<EpisodeItem> eps, String curUrl) {
+        int idx = -1;
+        for (int i = 0; i < eps.size(); i++) {
+            if (curUrl != null && curUrl.equals(eps.get(i).url)) { idx = i; break; }
+        }
+        // URL tidak ketemu (situs berubah) — tampilkan beberapa teratas.
+        int from = idx < 0 ? 0 : Math.max(0, idx - 2);
+        int to = idx < 0 ? Math.min(eps.size(), 6) : Math.min(eps.size(), idx + 3);
+
+        final List<EpisodeItem> window = new ArrayList<>();
+        final List<String> labels = new ArrayList<>();
+        for (int i = from; i < to; i++) {
+            EpisodeItem e = eps.get(i);
+            window.add(e);
+            String name = (e.num == null || e.num.isEmpty())
+                    ? e.title : ("Episode " + e.num);
+            String mark = (idx >= 0 && i == idx) ? "▸ "
+                    : (group.findByUrl(e.url) != null ? "✓ " : "");
+            labels.add(mark + name);
+        }
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle(group.title.isEmpty() ? getString(R.string.episode_list)
+                        : group.title)
+                .setItems(labels.toArray(new String[0]), (d, which) -> {
+                    EpisodeItem pick = window.get(which);
+                    HistoryItem seen = group.findByUrl(pick.url);
+                    playFull(group, eps, pick,
+                            seen != null && !seen.finished() ? seen.posMs : 0L);
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    /** Putar episode dari dialog dengan daftar rel lengkap + posisi resume. */
+    private void playFull(HistoryGroup group, List<EpisodeItem> eps,
+                          EpisodeItem pick, long pos) {
+        if (getContext() == null) return;
+        HistoryItem cur = group.latest();
+        Intent i = new Intent(requireContext(), PlayerActivity.class);
+        i.putExtra("epUrl", pick.url);
+        i.putExtra("epTitle", pick.title);
+        i.putExtra("title", cur != null ? cur.title : group.title);
+        i.putExtra("thumb", cur != null ? cur.thumb : group.thumb);
+        i.putExtra("seriesUrl", cur != null ? cur.seriesUrl : group.key);
+        i.putExtra("pos", pos);
+
+        int at = -1;
+        ArrayList<String> urls = new ArrayList<>();
+        ArrayList<String> titles = new ArrayList<>();
+        for (int n = 0; n < eps.size(); n++) {
+            urls.add(eps.get(n).url);
+            titles.add(eps.get(n).title);
+            if (pick.url != null && pick.url.equals(eps.get(n).url)) at = n;
+        }
+        if (at >= 0) {
+            i.putExtra("epIndex", at);
+            i.putStringArrayListExtra("epUrlList", urls);
+            i.putStringArrayListExtra("epTitleList", titles);
+        }
         startActivity(i);
     }
 
