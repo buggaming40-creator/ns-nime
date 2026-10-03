@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Ikon unduh (rel player) — path gaya Material. -->
+<!-- Ikon layar penuh (rel player). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp"
     android:viewportWidth="24" android:viewportHeight="24">
     <path
         android:fillColor="#FFFFFFFF"
-        android:pathData="M19,9h-4V3H9v6H5l7,7 7,-7zM5,18v2h14v-2H5z" />
+        android:pathData="M4,9V4h5v2H6v3zM15,4h5v5h-2V6h-3zM6,15v3h3v2H4v-5zM18,15v5h-5v-2h3v-3z" />
 </vector>

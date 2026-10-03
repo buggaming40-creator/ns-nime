@@ -16,7 +16,9 @@ Aplikasi Android untuk streaming anime subtitle Indonesia dengan sumber
   "Episode (N)" + grid/list + urut + chip rentang, ketuk episode =
   Putar Sekarang / Unduh (GoFile).
 - **Player** — WebView menangkap URL media → ExoPlayer (resume, menit
-  tersimpan); lanskap; mini-player PiP (bisa dimatikan); kontrol muncul saat diketuk (ala YouTube, tanpa tombol
+  tersimpan); mode tonton potret ala YouTube (video + info + aksi +
+  daftar episode, tanpa komen) + lanskap penuh; mini-player PiP
+  (bisa dimatikan); kontrol muncul saat diketuk (ala YouTube, tanpa tombol
   ganda); rel kanan: kecepatan 0,5x–2x, prev/next, penghitung, daftar episode,
   ganti server (bila >1 mirror); info 2 baris (anime + episode).
 - **Setelan** — tema Gelap/Terang/Ikuti sistem (bawaan Gelap), 8 warna aksen,

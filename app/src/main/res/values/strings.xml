@@ -95,6 +95,7 @@
     <!-- Player -->
     <string name="prev_ep">Episode sebelumnya</string>
     <string name="next_ep">Episode berikutnya</string>
+    <string name="fullscreen">Layar penuh</string>
     <string name="ep_counter">%1$d / %2$d</string>
 
     <!-- Navigasi: tab Tersimpan (tahap 2) -->

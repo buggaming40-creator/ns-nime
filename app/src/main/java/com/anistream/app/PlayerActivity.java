@@ -8,16 +8,22 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Rational;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.datasource.DefaultHttpDataSource;
@@ -29,6 +35,7 @@ import androidx.media3.ui.PlayerView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,9 +58,17 @@ public class PlayerActivity extends AppCompatActivity {
 
     private WebView web;
     private PlayerView playerView;
-    private View overlay, topbar, sideRail, btnPrev, btnNext, btnEps, btnDownload;
+    private View overlay, topbar, btnPrev, btnNext, btnEps, btnDownload, btnFs;
+    private LinearLayout sideRail;
+    private View videoBox, portraitScroll;
+    private LinearLayout actionRow;
+    private ViewGroup rootFrame;
+    private EpisodeAdapter epAdapter;
+    /** Kunci orientasi via tombol fullscreen (kembali sensor saat dilepas). */
+    private int lastOrientationReq =
+            android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR;
     private TextView status, titleBar, subtitleBar, modeBadge, epCounter, qualityBadge;
-    private TextView btnSpeed, btnServer;
+    private TextView btnSpeed, btnServer, infoTitle, infoSub, epListTitle;
     /** Rel episode siap (lebih dari 1 episode) — tampil hanya saat kontrol terlihat. */
     private boolean railReady;
 
@@ -169,6 +184,22 @@ public class PlayerActivity extends AppCompatActivity {
         btnDownload = findViewById(R.id.btnDownload);
         if (btnDownload != null) btnDownload.setOnClickListener(v -> downloadCurrent());
 
+        // Layar tonton adaptif: potret (info + aksi + daftar) / lanskap (penuh).
+        videoBox = findViewById(R.id.videoBox);
+        rootFrame = findViewById(R.id.rootFrame);
+        portraitScroll = findViewById(R.id.portraitScroll);
+        actionRow = findViewById(R.id.actionRow);
+        infoTitle = findViewById(R.id.infoTitle);
+        infoSub = findViewById(R.id.infoSub);
+        epListTitle = findViewById(R.id.epListTitle);
+        RecyclerView epList = findViewById(R.id.epList);
+        epAdapter = new EpisodeAdapter(item ->
+                gotoEpisode(epUrls.indexOf(item.url)));
+        epList.setLayoutManager(new LinearLayoutManager(this));
+        epList.setAdapter(epAdapter);
+        findViewById(R.id.btnFs).setOnClickListener(v -> toggleFullscreen());
+        applyOrientation(isLandscape());
+
         // Preferensi pemutar: aspect ratio & label kualitas (Setelan → Player).
         applyRatio();
         syncQualityLabel();
@@ -182,12 +213,16 @@ public class PlayerActivity extends AppCompatActivity {
                     @Override
                     public void onVisibilityChanged(int visibility) {
                         if (topbar != null && exoStarted) topbar.setVisibility(visibility);
-                        if (sideRail != null && railReady) sideRail.setVisibility(visibility);
+                        // Rel sisi hanya di lanskap; potret jadi baris aksi tetap.
+                        if (sideRail != null && railReady && isLandscape()) {
+                            sideRail.setVisibility(visibility);
+                        }
                     }
                 });
 
         store = new HistoryStore(this);
         newEpisodeState();
+        registerBackHandler();
 
         setupWebView();
         updateRail();
@@ -558,7 +593,13 @@ public class PlayerActivity extends AppCompatActivity {
     private void updateRail() {
         railReady = epIndex >= 0 && epUrls.size() > 1;
         if (!railReady || sideRail == null) {
-            if (sideRail != null) sideRail.setVisibility(View.GONE);
+            // Potret: baris aksi tetap tampil (speed/unduh/server/fs),
+            // hanya navigasi episode yang disembunyikan.
+            setNavButtonsVisible(false);
+            if (sideRail != null) {
+                sideRail.setVisibility(isLandscape() ? View.GONE : View.VISIBLE);
+            }
+            syncEpList();
             return;
         }
 
@@ -571,14 +612,164 @@ public class PlayerActivity extends AppCompatActivity {
         btnPrev.setAlpha(canPrev ? 1f : 0.3f);
         btnNext.setAlpha(canNext ? 1f : 0.3f);
 
-        if (btnEps != null) btnEps.setVisibility(View.VISIBLE);
+        setNavButtonsVisible(true);
         updateServerButton();
+        syncEpList();
 
-        // Ala YouTube: rel hanya tampil saat kontrol player terlihat.
-        // Sebelum Exo jalan (mode WebView) kontrol tak ada — tampilkan langsung.
+        // Lanskap ala YouTube: rel hanya tampil saat kontrol terlihat.
+        // Potret: rel menjadi baris aksi (selalu tampil). Sebelum Exo jalan
+        // (mode WebView) kontrol tak ada — tampilkan langsung.
+        if (!isLandscape()) {
+            sideRail.setVisibility(View.VISIBLE);
+            return;
+        }
         boolean controls = !exoStarted
                 || (playerView != null && playerView.isControllerFullyVisible());
         sideRail.setVisibility(controls ? View.VISIBLE : View.GONE);
+    }
+
+    /** Tampilkan/sembunyikan tombol navigasi episode (prev/counter/next/daftar). */
+    private void setNavButtonsVisible(boolean show) {
+        int v = show ? View.VISIBLE : View.GONE;
+        if (btnPrev != null) btnPrev.setVisibility(v);
+        if (btnNext != null) btnNext.setVisibility(v);
+        if (btnEps != null) btnEps.setVisibility(v);
+        if (epCounter != null) epCounter.setVisibility(v);
+    }
+
+    // ------------------------------------------------- orientasi potret/lanskap
+
+    private boolean isLandscape() {
+        return getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE;
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        applyOrientation(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE);
+    }
+
+    /** Potret: info + aksi + daftar. Lanskap: video penuh + rel sisi. */
+    private void applyOrientation(boolean landscape) {
+        if (portraitScroll != null) {
+            portraitScroll.setVisibility(landscape ? View.GONE : View.VISIBLE);
+        }
+        if (videoBox != null) {
+            android.view.ViewGroup.LayoutParams lp = videoBox.getLayoutParams();
+            if (landscape) {
+                lp.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+                lp.height = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+            } else {
+                lp.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+                lp.height = android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+            }
+            videoBox.setLayoutParams(lp);
+        }
+        moveRail(!landscape);
+        updateRail();
+    }
+
+    /** Pindahkan rel: baris aksi (potret) ↔ sisi kanan (lanskap). */
+    private void moveRail(boolean portrait) {
+        if (sideRail == null) return;
+        android.view.ViewParent cur = sideRail.getParent();
+        if (portrait) {
+            if (cur == actionRow || actionRow == null) return;
+            ((android.view.ViewGroup) cur).removeView(sideRail);
+            sideRail.setOrientation(LinearLayout.HORIZONTAL);
+            actionRow.addView(sideRail);
+        } else {
+            if ((rootFrame != null && cur == rootFrame) || rootFrame == null) {
+                sideRail.setOrientation(LinearLayout.VERTICAL);
+                return;
+            }
+            ((android.view.ViewGroup) cur).removeView(sideRail);
+            sideRail.setOrientation(LinearLayout.VERTICAL);
+            android.widget.FrameLayout.LayoutParams lp =
+                    new android.widget.FrameLayout.LayoutParams(
+                            android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+                            android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+                            android.view.Gravity.END | android.view.Gravity.CENTER_VERTICAL);
+            lp.setMarginEnd(dp(8));
+            rootFrame.addView(sideRail, lp);
+        }
+    }
+
+    /** Tombol fullscreen: kunci lanskap / kembali mengikuti sensor. */
+    private void toggleFullscreen() {
+        boolean toLand = !isLandscape();
+        lastOrientationReq = toLand
+                ? android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                : android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR;
+        setRequestedOrientation(lastOrientationReq);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // JANGAN dipakai: targetSdk 33+ memakai predictive back sehingga
+        // metode ini tidak dipanggil sistem. Lihat registerBackHandler().
+        super.onBackPressed();
+    }
+
+    /**
+     * Back modern (OnBackPressedDispatcher — wajib di targetSdk 33+ karena
+     * onBackPressed() warisan tidak lagi dipanggil). Lanskap terkunci:
+     * kembali ke potret dulu, bukan keluar.
+     */
+    private void registerBackHandler() {
+        getOnBackPressedDispatcher().addCallback(
+                this, new androidx.activity.OnBackPressedCallback(true) {
+                    @Override public void handleOnBackPressed() {
+                        if (isLandscape() && lastOrientationReq
+                                != android.content.pm.ActivityInfo
+                                        .SCREEN_ORIENTATION_SENSOR) {
+                            lastOrientationReq = android.content.pm.ActivityInfo
+                                    .SCREEN_ORIENTATION_SENSOR;
+                            setRequestedOrientation(lastOrientationReq);
+                            return;
+                        }
+                        setEnabled(false);
+                        getOnBackPressedDispatcher().onBackPressed();
+                    }
+                });
+    }
+
+    private int dp(float v) {
+        return Math.round(v * getResources().getDisplayMetrics().density);
+    }
+
+    /** Daftar episode di bawah video (pengganti komen ala AL). */
+    private void syncEpList() {
+        if (epListTitle != null) {
+            epListTitle.setText(epUrls.isEmpty()
+                    ? getString(R.string.all_episodes)
+                    : getString(R.string.episode_count_fmt, epUrls.size()));
+        }
+        if (epAdapter == null) return;
+        List<EpisodeItem> items = new ArrayList<>();
+        for (int i = 0; i < epUrls.size(); i++) {
+            String t = i < epTitles.size() ? epTitles.get(i) : "";
+            EpisodeItem e = new EpisodeItem();
+            e.url = epUrls.get(i);
+            e.title = t == null ? "" : t;
+            // Pil menampilkan NOMOR episode asli (bukan posisi daftar).
+            e.num = epNumOf(e.title, i + 1);
+            items.add(e);
+        }
+        epAdapter.submit(items);
+    }
+
+    /** Ambil angka episode terakhir dari judul ("… Episode 12" → "12"). */
+    private static String epNumOf(String title, int fallback) {
+        if (title != null) {
+            java.util.regex.Matcher m =
+                    java.util.regex.Pattern.compile("(\\d+)").matcher(title);
+            String last = null;
+            while (m.find()) last = m.group(1);
+            if (last != null) return last;
+        }
+        return String.valueOf(fallback);
     }
 
     // ------------------------------------------------- kecepatan / server / daftar
@@ -696,10 +887,16 @@ public class PlayerActivity extends AppCompatActivity {
 
     /** Judul = nama anime; subjudul = episode. Info tampil di bilah atas. */
     private void syncTitle() {
-        if (titleBar != null) titleBar.setText(title.isEmpty() ? epTitle : title);
+        String main = title.isEmpty() ? epTitle : title;
+        if (titleBar != null) titleBar.setText(main);
         if (subtitleBar != null) {
             subtitleBar.setText(epTitle);
             subtitleBar.setVisibility(epTitle.isEmpty() ? View.GONE : View.VISIBLE);
+        }
+        if (infoTitle != null) infoTitle.setText(main);
+        if (infoSub != null) {
+            infoSub.setText(epTitle);
+            infoSub.setVisibility(epTitle.isEmpty() ? View.GONE : View.VISIBLE);
         }
     }
 

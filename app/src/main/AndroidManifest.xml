@@ -35,7 +35,7 @@
             android:name=".PlayerActivity"
             android:exported="false"
             android:launchMode="singleTop"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="sensor"
             android:supportsPictureInPicture="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize"
             android:theme="@style/Theme.AniStream.Player" />
