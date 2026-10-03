@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -425,7 +424,7 @@ public class SettingsFragment extends Fragment {
 
     private void confirmClearCache() {
         if (getContext() == null) return;
-        new AlertDialog.Builder(requireContext())
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.clear_cache)
                 .setMessage(R.string.clear_cache_msg)
                 .setPositiveButton(R.string.delete, (d, w) -> {
@@ -438,7 +437,7 @@ public class SettingsFragment extends Fragment {
 
     private void confirmClearSearch() {
         if (getContext() == null) return;
-        new AlertDialog.Builder(requireContext())
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.clear_search_history)
                 .setMessage(R.string.clear_search_history_msg)
                 .setPositiveButton(R.string.delete, (d, w) -> {
@@ -450,7 +449,7 @@ public class SettingsFragment extends Fragment {
 
     private void confirmClear() {
         if (getContext() == null || store == null) return;
-        new AlertDialog.Builder(requireContext())
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.clear_history)
                 .setMessage(R.string.clear_history_msg)
                 .setPositiveButton(R.string.delete, (d, w) -> {

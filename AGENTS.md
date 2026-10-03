@@ -56,3 +56,13 @@ cd /home/nansoffc/AniStream && ./gradlew assembleDebug   # gradlew TIDAK di PATH
 - Proses app kadang STALE setelah `install -r` — `force-stop` dulu bila
   perilaku tidak sesuai kode baru.
 - Jangan memasukkan kredensial Google/akun ke emulator.
+
+## Pelajaran build
+- Build incremental di sini TIDAK bisa dipercaya (pernah hasilkan Frankenstein:
+  UI campur kode lama/baru). Untuk APK rilis/uji SELALU `clean assembleDebug
+  --no-build-cache`, lalu verifikasi isi dex (`unzip -p ... classes*.dex |
+  grep -c <simbol-baru>`) + `force-stop` sebelum install/uji.
+- Setelah `install -r`, proses app kadang STALE — selalu `force-stop` dulu.
+- Dump uiautomator hanya memuat baris RecyclerView yang menempel (tidak bisa
+  dipakai membuktikan seksi tidak ada); screenshot lebih terpercaya. Dump juga
+  melewatkan node GONE dan lambat (kontrol player keburu hide).

@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -203,7 +202,7 @@ public class HistoryFragment extends Fragment {
             labels.add(mark + name);
         }
 
-        new AlertDialog.Builder(requireContext())
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
                 .setTitle(group.title.isEmpty() ? getString(R.string.episode_list)
                         : group.title)
                 .setItems(labels.toArray(new String[0]), (d, which) -> {
@@ -247,7 +246,7 @@ public class HistoryFragment extends Fragment {
 
     private void confirmClear() {
         if (getContext() == null) return;
-        new AlertDialog.Builder(requireContext())
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.clear_history)
                 .setMessage(R.string.clear_history_msg)
                 .setPositiveButton(R.string.delete, (d, w) -> {

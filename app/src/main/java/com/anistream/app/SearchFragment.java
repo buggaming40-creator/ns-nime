@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -271,7 +270,7 @@ public class SearchFragment extends Fragment {
     /** Dialog 16 genre netral — pilih = cari langsung. */
     private void showMoreGenres() {
         if (getContext() == null) return;
-        new AlertDialog.Builder(requireContext())
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.genre_browse)
                 .setItems(GENRE_ALL, (d, which) -> genreSearch(GENRE_ALL[which]))
                 .setNegativeButton(R.string.cancel, null)

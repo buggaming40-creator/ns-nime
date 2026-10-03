@@ -1,5 +1,7 @@
 package com.anistream.app;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Locale;
 
 public final class Utils {
@@ -36,5 +38,49 @@ public final class Utils {
         long s = total % 60, m = (total / 60) % 60, h = total / 3600;
         if (h > 0) return String.format(Locale.getDefault(), "%d:%02d:%02d", h, m, s);
         return String.format(Locale.getDefault(), "%02d:%02d", m, s);
+    }
+
+    /**
+     * Tanggal situs ("September 30, 2026") menjadi relatif ("3 hari lalu",
+     * ala AL). Gagal urai = teks mentah (tanpa data karangan).
+     */
+    public static String relDate(String raw) {
+        long ms = parseDate(raw);
+        return ms <= 0 ? (raw == null ? "" : raw) : timeAgo(ms);
+    }
+
+    /** Nama hari Indonesia dari tanggal situs; "" bila tak terurai. */
+    public static String weekdayOf(String raw) {
+        long ms = parseDate(raw);
+        if (ms <= 0) return "";
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(ms);
+        String[] days = {"Minggu", "Senin", "Selasa", "Rabu",
+                "Kamis", "Jumat", "Sabtu"};
+        return days[c.get(Calendar.DAY_OF_WEEK) - 1];
+    }
+
+    private static long parseDate(String raw) {
+        if (raw == null) return 0;
+        String t = raw.trim();
+        if (t.isEmpty()) return 0;
+        // Kadang tanggal menempel label ("Episode 2 - October 1, 2026") —
+        // comot bagian tanggalnya dulu.
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                "([A-Za-z]+ \\d{1,2}, \\d{4}|\\d{1,2} [A-Za-z]+ \\d{4})").matcher(t);
+        if (m.find()) t = m.group(1);
+        String[][] pats = {
+                {"MMMM d, yyyy", "en"}, {"MMM d, yyyy", "en"},
+                {"d MMMM yyyy", "in"}, {"d MMM yyyy", "in"},
+        };
+        for (String[] p : pats) {
+            try {
+                Locale loc = "in".equals(p[1]) ? new Locale("in", "ID") : Locale.US;
+                java.util.Date d = new SimpleDateFormat(p[0], loc).parse(t);
+                if (d != null) return d.getTime();
+            } catch (Throwable ignored) {
+            }
+        }
+        return 0;
     }
 }

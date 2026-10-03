@@ -163,6 +163,17 @@
             android:src="@drawable/ic_list"
             app:tint="#FFFFFF" />
 
+        <ImageButton
+            android:id="@+id/btnDownload"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_marginTop="7dp"
+            android:background="@drawable/bg_rail_btn"
+            android:contentDescription="@string/download"
+            android:padding="11dp"
+            android:src="@drawable/ic_download"
+            app:tint="#FFFFFF" />
+
         <TextView
             android:id="@+id/btnServer"
             android:layout_width="46dp"

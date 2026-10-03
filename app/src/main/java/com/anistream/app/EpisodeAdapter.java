@@ -54,7 +54,8 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.VH> {
         final EpisodeItem it = data.get(i);
         h.num.setText(it.num.isEmpty() ? "EP" : it.num);
         if (h.title != null) h.title.setText(it.title);
-        h.date.setText(it.date);
+        // Tanggal situs menjadi relatif ("16 jam yang lalu", ala AL).
+        h.date.setText(Utils.relDate(it.date));
         // Baris daftar tetap seperti semula; sel grid menyembunyikan tanggal kosong.
         boolean emptyDate = it.date == null || it.date.isEmpty();
         if (h.title == null) h.date.setVisibility(emptyDate ? View.GONE : View.VISIBLE);

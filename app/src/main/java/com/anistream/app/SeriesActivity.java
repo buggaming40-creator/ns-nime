@@ -13,7 +13,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -44,7 +43,7 @@ public class SeriesActivity extends AppCompatActivity {
     private ImageButton btnSort, btnView;
     private HistoryStore store;
     private BookmarkStore bookmarks;
-    private ImageButton btnBookmark;
+    private com.google.android.material.button.MaterialButton btnBookmark;
 
     /** Kartu lanjutkan menonton (diisi dari riwayat judul ini). */
     private View resumeCard;
@@ -432,7 +431,7 @@ public class SeriesActivity extends AppCompatActivity {
     private void askEpisode(EpisodeItem item) {
         if (item == null) return;
         String[] options = {getString(R.string.play_now), getString(R.string.download)};
-        new AlertDialog.Builder(this)
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
                 .setTitle(item.title.isEmpty() ? title : item.title)
                 .setItems(options, (d, which) -> {
                     if (which == 0) openEpisode(item);
@@ -528,7 +527,7 @@ public class SeriesActivity extends AppCompatActivity {
         names[real.size()] = getString(R.string.new_category);
         final int[] pick = {checked};
 
-        new AlertDialog.Builder(this)
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.save_to_title)
                 .setSingleChoiceItems(names, checked, (d, which) -> {
                     if (which == real.size()) {
@@ -554,7 +553,7 @@ public class SeriesActivity extends AppCompatActivity {
         ed.setSingleLine();
         int pad = dp(4);
         ed.setPadding(pad, pad, pad, pad);
-        new AlertDialog.Builder(this)
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.new_category)
                 .setView(ed)
                 .setPositiveButton(R.string.bookmark_add, (d, w) -> {
@@ -582,21 +581,16 @@ public class SeriesActivity extends AppCompatActivity {
         return pageUrl;
     }
 
-    /** Ikon tombol bookmark mengikuti keadaan simpan dan aksen tema aktif. */
+    /** Pil Simpan mengikuti keadaan simpan dan aksen tema aktif. */
     private void syncBookmarkButton() {
         if (btnBookmark == null || bookmarks == null) return;
         boolean saved = !bookmarkKey().isEmpty() && bookmarks.has(bookmarkKey());
 
-        btnBookmark.setImageResource(saved ? R.drawable.ui_ic_bookmark_filled
-                                           : R.drawable.ic_bookmark);
+        btnBookmark.setText(saved ? R.string.saved : R.string.save);
+        btnBookmark.setIconResource(saved ? R.drawable.ui_ic_bookmark_filled
+                                          : R.drawable.ic_bookmark);
         btnBookmark.setContentDescription(getString(
                 saved ? R.string.bookmark_remove : R.string.bookmark_add));
-
-        int tint = saved
-                ? com.google.android.material.color.MaterialColors.getColor(
-                        btnBookmark, com.google.android.material.R.attr.colorPrimary)
-                : androidx.core.content.ContextCompat.getColor(this, R.color.text_secondary);
-        btnBookmark.setImageTintList(android.content.res.ColorStateList.valueOf(tint));
     }
 
     private void openEpisode(EpisodeItem item) {
