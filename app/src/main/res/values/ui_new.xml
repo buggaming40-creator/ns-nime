@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Sumber daya UI tambahan untuk restyle (gaya ala AnimeLovers v3, tetap
+  khas AniStream). Aturan yang dipakai di sini:
+  - Warna aksen SELALU lewat ?attr/colorPrimary, ?attr/colorOnPrimary,
+    ?attr/colorSecondary, ?attr/colorAccent supaya picker aksen tetap bekerja.
+  - Warna netral memakai @color/window_bg, card_bg, text_primary,
+    text_secondary, divider (didefinisikan di colors.xml, tidak didefinisikan
+    ulang di sini).
+  - Semua nama baru memakai prefiks ui_.
+-->
+<resources>
+    <!-- Titik bintang dekoratif pada latar header (mode terang: gelap tipis). -->
+    <color name="ui_star_color">#14000000</color>
+
+    <!-- Petunjuk kecil di sisi kanan judul bagian Terbaru. -->
+    <string name="ui_refresh_hint">Muat ulang</string>
+    <!-- Judul kecil di atas kolom hasil pencarian. -->
+    <string name="ui_results_hint">Hasil pencarian</string>
+
+    <!--
+      Indikator item navigasi bawah: pil aksen penuh di belakang ikon aktif.
+      Induknya gaya bawaan Material3 sehingga shape membulat & ukuran tetap
+      konsisten; di sini hanya warna dan ukuran yang disesuaikan.
+    -->
+    <style name="Ui.Nav.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:width">62dp</item>
+        <item name="android:height">34dp</item>
+        <item name="marginHorizontal">3dp</item>
+        <item name="android:color">?attr/colorPrimary</item>
+    </style>
+</resources>

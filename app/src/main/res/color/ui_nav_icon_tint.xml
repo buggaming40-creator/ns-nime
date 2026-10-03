@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Warna IKON navigasi bawah: ikon aktif memakai warna di atas aksen
+  (?attr/colorOnPrimary) karena berada di dalam pil aksen; ikon pasif abu netral.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="?attr/colorOnPrimary" android:state_checked="true" />
+    <item android:color="?attr/colorOnPrimary" android:state_selected="true" />
+    <item android:color="@color/text_secondary" />
+</selector>

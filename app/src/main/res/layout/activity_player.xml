@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Layar pemutar. WebView dipakai untuk menangkap URL media, PlayerView (ExoPlayer)
+  untuk pemutaran sesungguhnya. Rel sisi kanan memuat tombol episode
+  sebelumnya/berikutnya sehingga episode berikutnya bisa dibuka tanpa keluar.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:keepScreenOn="true">
+
+    <WebView
+        android:id="@+id/webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible" />
+
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/playerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:keepScreenOn="true"
+        android:visibility="gone"
+        app:resize_mode="fit"
+        app:show_buffering="always"
+        app:use_controller="true" />
+
+    <LinearLayout
+        android:id="@+id/overlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/loading_player"
+            android:textColor="#CCCCCC" />
+    </LinearLayout>
+
+    <!-- Bilah atas: tombol kembali + judul -->
+    <LinearLayout
+        android:id="@+id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ui_bg_player_topbar"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="6dp">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/ui_bg_player_button"
+            android:contentDescription="@string/back"
+            android:padding="10dp"
+            android:src="@drawable/ic_back"
+            app:tint="#FFFFFF" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="#BDBDCB"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Rel navigasi episode di sisi kanan -->
+    <LinearLayout
+        android:id="@+id/sideRail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="8dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/btnSpeed"
+            android:layout_width="46dp"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_rail_btn"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="1×"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/btnPrev"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_marginTop="7dp"
+            android:background="@drawable/bg_rail_btn"
+            android:contentDescription="@string/prev_ep"
+            android:padding="11dp"
+            android:src="@drawable/ic_prev"
+            app:tint="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/epCounter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="7dp"
+            android:background="@drawable/bg_rail_btn"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/btnNext"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/bg_rail_btn"
+            android:contentDescription="@string/next_ep"
+            android:padding="11dp"
+            android:src="@drawable/ic_next"
+            app:tint="#FFFFFF" />
+
+        <ImageButton
+            android:id="@+id/btnEps"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_marginTop="7dp"
+            android:background="@drawable/bg_rail_btn"
+            android:contentDescription="@string/episode_list"
+            android:padding="11dp"
+            android:src="@drawable/ic_list"
+            app:tint="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/btnServer"
+            android:layout_width="46dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="7dp"
+            android:background="@drawable/bg_rail_btn"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="S1"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/modeBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="10dp"
+        android:background="#99000000"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="3dp"
+        android:textColor="#FFCC80"
+        android:textSize="11sp"
+        android:visibility="gone" />
+
+    <!-- Label preferensi kualitas (jujur: dipilih di Setelan, bukan transcode ulang) -->
+    <TextView
+        android:id="@+id/uiQualityBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="10dp"
+        android:background="#99000000"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="3dp"
+        android:textColor="#FFFFFF"
+        android:textSize="11sp"
+        android:visibility="gone" />
+</FrameLayout>

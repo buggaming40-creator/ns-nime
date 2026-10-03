@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Shell utama. ViewPager2 menampung lima halaman sehingga layar bisa digeser
+  horizontal (Terbaru ⇄ Cari ⇄ Tersimpan ⇄ Riwayat ⇄ Setelan) dan tetap
+  sinkron dengan BottomNavigationView.
+
+  Navigasi bawah mengambang membulat (wadah ui_bg_nav, outline 1dp) dengan
+  pil aksen penuh di belakang ikon aktif (lihat Ui.Nav.ActiveIndicator).
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/window_bg"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/ui_bg_nav"
+        android:elevation="6dp"
+        app:itemActiveIndicatorStyle="@style/Ui.Nav.ActiveIndicator"
+        app:itemIconSize="24dp"
+        app:itemIconTint="@color/ui_nav_icon_tint"
+        app:itemTextColor="@color/nav_tint"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_menu" />
+</LinearLayout>

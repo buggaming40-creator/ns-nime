@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NsNime</string>
+    <string name="tagline">Streaming anime subtitle Indonesia</string>
+    <string name="logo_desc">Ikon NsNime</string>
+
+    <!-- Navigasi bawah -->
+    <string name="nav_latest">Terbaru</string>
+    <string name="nav_search">Cari</string>
+    <string name="nav_history">Riwayat</string>
+    <string name="nav_settings">Setelan</string>
+
+    <!-- Header -->
+    <string name="section_latest">Rilis Terbaru</string>
+    <string name="pull_hint">Tarik ke bawah untuk muat ulang</string>
+    <string name="section_search">Cari Anime</string>
+
+    <!-- Pencarian -->
+    <string name="hint_search">Ketik judul anime…</string>
+    <string name="btn_search">Cari</string>
+    <string name="clear_query">Hapus teks</string>
+    <string name="recents_title">Pencarian Terakhir</string>
+
+    <!-- Riwayat -->
+    <string name="history_title">Riwayat Tonton</string>
+    <string name="history_total">%1$s ditonton · %2$d episode</string>
+    <string name="history_total_none">Belum ada tontonan tersimpan</string>
+    <string name="history_items_fmt">%1$d episode tersimpan</string>
+    <string name="clear_all">Bersihkan</string>
+    <string name="clear_history">Bersihkan riwayat tonton</string>
+    <string name="clear_history_msg">Hapus seluruh riwayat tonton beserta catatan menitnya?</string>
+    <string name="cancel">Batal</string>
+
+    <!-- Setelan -->
+    <string name="settings_title">Setelan</string>
+    <string name="theme_title">Tema Tampilan</string>
+    <string name="theme_dark">Gelap</string>
+    <string name="theme_light">Terang</string>
+    <string name="theme_system">Ikuti sistem</string>
+
+    <!-- Pilihan warna aksen -->
+    <string name="accent_title">Warna Aksen</string>
+    <string name="accent_hint">Warna aksen berlaku langsung di seluruh aplikasi</string>
+    <string name="accent_name_indigo">Indigo</string>
+    <string name="accent_name_ungu">Ungu</string>
+    <string name="accent_name_biru">Biru</string>
+    <string name="accent_name_toska">Toska</string>
+    <string name="accent_name_hijau">Hijau</string>
+    <string name="accent_name_merah">Merah</string>
+    <string name="accent_name_oranye">Oranye</string>
+    <string name="accent_name_pink">Pink</string>
+    <string name="about_title">Tentang Aplikasi</string>
+    <string name="data_title">Data</string>
+    <string name="developer_label">Dibuat oleh</string>
+    <string name="developer_name">nansoffc</string>
+    <string name="version_fmt">Versi %1$s</string>
+    <string name="source_label">Sumber data</string>
+    <string name="source_value">oploverz.ch</string>
+    <string name="engine_label">Player</string>
+    <string name="engine_value">WebView + ExoPlayer (Media3)</string>
+    <string name="footer_text">NsNime dibuat oleh nansoffc</string>
+
+    <!-- Daftar / keadaan kosong -->
+    <string name="all_episodes">Semua Episode</string>
+    <string name="episode_count_fmt">Episode (%1$d)</string>
+    <string name="synopsis_title">Sinopsis</string>
+    <string name="read_more">Lihat Selengkapnya</string>
+    <string name="read_less">Tutup</string>
+    <string name="sort_episodes">Urutkan episode</string>
+    <string name="sort_newest">Terbaru dulu</string>
+    <string name="sort_oldest">Episode 1 dulu</string>
+    <string name="play_now">Putar Sekarang</string>
+    <string name="download">Unduh</string>
+    <string name="no_download">Tautan unduhan tidak tersedia</string>
+    <string name="episode_list">Pilih Episode</string>
+    <string name="server_fmt">Server %1$d</string>
+    <string name="empty_latest">Belum ada data. Tarik ke bawah untuk muat ulang.</string>
+    <string name="empty_search">Ketik judul anime untuk mulai mencari.</string>
+    <string name="empty_search2">Tidak ada hasil untuk kata kunci itu.</string>
+    <string name="empty_history">Belum ada riwayat tonton.\nEpisode yang kamu tonton akan muncul di sini lengkap dengan menitnya.</string>
+
+    <!-- Umum -->
+    <string name="loading">Memuat…</string>
+    <string name="loading_player">Menyiapkan player…</string>
+    <string name="resume">Lanjutkan Nonton</string>
+    <string name="delete">Hapus</string>
+    <string name="err_net">Gagal memuat. Cek koneksi lalu coba lagi.</string>
+    <string name="web_mode">Mode web</string>
+    <string name="back">Kembali</string>
+
+    <!-- Player -->
+    <string name="prev_ep">Episode sebelumnya</string>
+    <string name="next_ep">Episode berikutnya</string>
+    <string name="ep_counter">%1$d / %2$d</string>
+
+    <!-- Navigasi: tab Tersimpan (tahap 2) -->
+    <string name="nav_saved">Tersimpan</string>
+
+    <!-- Tab Tersimpan -->
+    <string name="section_bookmark">Tersimpan</string>
+    <string name="bookmark_total">%1$d judul tersimpan</string>
+    <string name="bookmark_empty">Belum ada judul tersimpan.\nBuka sebuah judul lalu tekan ikon bookmark untuk menyimpannya.</string>
+    <string name="sort_alpha">Abjad</string>
+    <string name="sort_added">Ditambahkan</string>
+    <string name="sort_updated">Diperbarui</string>
+    <string name="new_episode">Ada Episode Baru!</string>
+    <string name="clear_bookmark">Hapus semua bookmark</string>
+    <string name="clear_bookmark_msg">Hapus seluruh judul tersimpan dari perangkat ini?</string>
+    <string name="bookmark_add">Simpan judul ini</string>
+    <string name="bookmark_remove">Hapus dari Tersimpan</string>
+
+    <!-- Beranda -->
+    <string name="section_ongoing">Sedang Tayang</string>
+    <string name="section_top">Top Rating</string>
+    <string name="ui_banner_desc">Poster unggulan</string>
+    <string name="ui_search_desc">Buka pencarian</string>
+
+    <!-- Setelan: Player -->
+    <string name="player_title">Player</string>
+    <string name="quality_title">Kualitas Default</string>
+    <string name="quality_hint">Preferensi pemutaran — dipakai bila tersedia; kualitas akhir ditentukan sumber video.</string>
+    <string name="quality_360p">360p</string>
+    <string name="quality_480p">480p</string>
+    <string name="quality_720p">720p</string>
+    <string name="quality_1080p">1080p</string>
+    <string name="autoplay_title">Autoplay episode berikutnya</string>
+    <string name="autoplay_on">ON</string>
+    <string name="autoplay_off">OFF</string>
+    <string name="ratio_title">Aspect Ratio</string>
+    <string name="ratio_hint">Cara video mengisi layar pemutar.</string>
+    <string name="ratio_fit">Fit</string>
+    <string name="ratio_fill">Fill</string>
+    <string name="ratio_zoom">Zoom</string>
+
+    <!-- Setelan: Penyimpanan -->
+    <string name="storage_title">Penyimpanan</string>
+    <string name="clear_cache">Hapus cache gambar</string>
+    <string name="clear_cache_msg">Hapus berkas cache gambar dari perangkat? Riwayat dan bookmark tidak ikut terhapus.</string>
+    <string name="clear_search_history">Hapus riwayat pencarian</string>
+    <string name="clear_search_history_msg">Hapus semua kata kunci pencarian terakhir?</string>
+    <string name="storage_status">%1$d episode · %2$d bookmark · %3$s</string>
+
+    <!-- Setelan: Changelog & Disclaimer -->
+    <string name="changelog_title">Changelog</string>
+    <string name="changelog_body">Tahap 2 — palet Slate/Indigo, tab Tersimpan (bookmark + lencana episode baru), banner beranda, filter Anime/Donghua, dan preferensi player (kualitas, autoplay, aspect ratio).</string>
+    <string name="disclaimer_title">Disclaimer / DMCA</string>
+    <string name="disclaimer_body">Aplikasi ini tidak menyimpan maupun mendistribusikan file video. Konten diambil dari sumber publik (oploverz.ch) dan diputar melalui penyedia pihak ketiga. Bila Anda pemegang hak cipta dan merasa konten ditayangkan tanpa izin, silakan hubungi pengembang untuk permintaan penghapusan (DMCA).</string>
+
+    <!-- Label preferensi kualitas di layar pemutar -->
+    <string name="quality_badge">%1$s · preferensi</string>
+</resources>

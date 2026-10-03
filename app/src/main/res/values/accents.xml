@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Overlay aksen warna pilihan pengguna.
+
+  Rantai gaya sengaja TIDAK menyentuh Theme.AniStream: induknya adalah
+  theme_accent_base yang tanpa induk, sehingga overlay ini hanya mengganti
+  atribut warna aksen. Karena itu gaya yang sama aman diterapkan lewat
+  setTheme() di atas tema dasar mana pun (utama, seri, maupun pemutar).
+
+  Nilai warnanya memakai @color sehingga otomatis mengikuti mode terang
+  (values/colors.xml) atau gelap (values-night/colors.xml).
+
+  Re-based tahap 2: opsi "Indigo" (bawaan) mengikuti tabel token
+  Slate/Indigo di animelovers.md §4 — terang #4F46E5, gelap #818CF8, wadah
+  memakai accent_soft. Tujuh opsi lain tetap dipertahankan sebagai alternatif.
+-->
+<resources>
+    <!-- Induk kosong: memutus induk implisit agar rantai overlay tetap tipis. -->
+    <style name="theme_accent_base" />
+
+    <!-- Atribut bersama untuk semua pilihan aksen. -->
+    <style name="Theme.AniStream.Accent" parent="@style/theme_accent_base">
+        <item name="colorOnPrimary">@color/accent_on_primary</item>
+        <item name="colorOnSecondary">@color/accent_on_primary</item>
+        <item name="colorOnPrimaryContainer">@color/text_primary</item>
+        <item name="colorOnSecondaryContainer">@color/text_primary</item>
+    </style>
+
+    <!-- 1. Indigo — bawaan. -->
+    <style name="Theme.AniStream.Accent.Indigo">
+        <item name="colorPrimary">@color/accent_indigo</item>
+        <item name="colorPrimaryContainer">@color/accent_container_indigo</item>
+        <item name="colorSecondary">@color/accent_indigo</item>
+        <item name="colorSecondaryContainer">@color/accent_container_indigo</item>
+        <item name="colorAccent">@color/accent_indigo</item>
+        <item name="android:colorAccent">@color/accent_indigo</item>
+        <item name="colorControlActivated">@color/accent_indigo</item>
+    </style>
+
+    <!-- 2. Ungu. -->
+    <style name="Theme.AniStream.Accent.Ungu">
+        <item name="colorPrimary">@color/accent_ungu</item>
+        <item name="colorPrimaryContainer">@color/accent_container_ungu</item>
+        <item name="colorSecondary">@color/accent_ungu</item>
+        <item name="colorSecondaryContainer">@color/accent_container_ungu</item>
+        <item name="colorAccent">@color/accent_ungu</item>
+        <item name="android:colorAccent">@color/accent_ungu</item>
+        <item name="colorControlActivated">@color/accent_ungu</item>
+    </style>
+
+    <!-- 3. Biru. -->
+    <style name="Theme.AniStream.Accent.Biru">
+        <item name="colorPrimary">@color/accent_biru</item>
+        <item name="colorPrimaryContainer">@color/accent_container_biru</item>
+        <item name="colorSecondary">@color/accent_biru</item>
+        <item name="colorSecondaryContainer">@color/accent_container_biru</item>
+        <item name="colorAccent">@color/accent_biru</item>
+        <item name="android:colorAccent">@color/accent_biru</item>
+        <item name="colorControlActivated">@color/accent_biru</item>
+    </style>
+
+    <!-- 4. Toska. -->
+    <style name="Theme.AniStream.Accent.Toska">
+        <item name="colorPrimary">@color/accent_toska</item>
+        <item name="colorPrimaryContainer">@color/accent_container_toska</item>
+        <item name="colorSecondary">@color/accent_toska</item>
+        <item name="colorSecondaryContainer">@color/accent_container_toska</item>
+        <item name="colorAccent">@color/accent_toska</item>
+        <item name="android:colorAccent">@color/accent_toska</item>
+        <item name="colorControlActivated">@color/accent_toska</item>
+    </style>
+
+    <!-- 5. Hijau. -->
+    <style name="Theme.AniStream.Accent.Hijau">
+        <item name="colorPrimary">@color/accent_hijau</item>
+        <item name="colorPrimaryContainer">@color/accent_container_hijau</item>
+        <item name="colorSecondary">@color/accent_hijau</item>
+        <item name="colorSecondaryContainer">@color/accent_container_hijau</item>
+        <item name="colorAccent">@color/accent_hijau</item>
+        <item name="android:colorAccent">@color/accent_hijau</item>
+        <item name="colorControlActivated">@color/accent_hijau</item>
+    </style>
+
+    <!-- 6. Merah. -->
+    <style name="Theme.AniStream.Accent.Merah">
+        <item name="colorPrimary">@color/accent_merah</item>
+        <item name="colorPrimaryContainer">@color/accent_container_merah</item>
+        <item name="colorSecondary">@color/accent_merah</item>
+        <item name="colorSecondaryContainer">@color/accent_container_merah</item>
+        <item name="colorAccent">@color/accent_merah</item>
+        <item name="android:colorAccent">@color/accent_merah</item>
+        <item name="colorControlActivated">@color/accent_merah</item>
+    </style>
+
+    <!-- 7. Oranye. -->
+    <style name="Theme.AniStream.Accent.Oranye">
+        <item name="colorPrimary">@color/accent_oranye</item>
+        <item name="colorPrimaryContainer">@color/accent_container_oranye</item>
+        <item name="colorSecondary">@color/accent_oranye</item>
+        <item name="colorSecondaryContainer">@color/accent_container_oranye</item>
+        <item name="colorAccent">@color/accent_oranye</item>
+        <item name="android:colorAccent">@color/accent_oranye</item>
+        <item name="colorControlActivated">@color/accent_oranye</item>
+    </style>
+
+    <!-- 8. Pink. -->
+    <style name="Theme.AniStream.Accent.Pink">
+        <item name="colorPrimary">@color/accent_pink</item>
+        <item name="colorPrimaryContainer">@color/accent_container_pink</item>
+        <item name="colorSecondary">@color/accent_pink</item>
+        <item name="colorSecondaryContainer">@color/accent_container_pink</item>
+        <item name="colorAccent">@color/accent_pink</item>
+        <item name="android:colorAccent">@color/accent_pink</item>
+        <item name="colorControlActivated">@color/accent_pink</item>
+    </style>
+</resources>

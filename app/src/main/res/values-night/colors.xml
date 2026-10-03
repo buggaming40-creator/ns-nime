@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Palet mode GELAP — token Slate/Indigo (acuan: animelovers.md §4).
+  Latar Slate 900, kartu Slate 800, outline Slate 700; primer memakai Indigo 400
+  agar kontras di atas Slate (teks di atasnya memakai on_primary gelap).
+  Nama resource sama persis dengan values/colors.xml sehingga satu definisi
+  per mode cukup.
+-->
+<resources>
+    <color name="primary">#818CF8</color>
+    <color name="primary_light">#A5B4FC</color>
+    <color name="primary_dark">#A5B4FC</color>
+    <color name="accent">#818CF8</color>
+    <color name="accent_soft">#312E81</color>
+    <color name="badge_bg">#818CF8</color>
+
+    <color name="window_bg">#0F172A</color>
+    <color name="card_bg">#1E293B</color>
+    <color name="nav_bg">#0F172A</color>
+    <color name="border">#334155</color>
+    <color name="divider">#334155</color>
+
+    <color name="text_primary">#F8FAFC</color>
+    <color name="text_secondary">#94A3B8</color>
+    <color name="on_primary">#0F172A</color>
+
+    <color name="ic_launcher_bg">#121212</color>
+
+    <!-- Warna aksen pilihan pengguna (mode gelap: terang supaya di atas Slate). -->
+    <color name="accent_indigo">#818CF8</color>
+    <color name="accent_ungu">#B39DDB</color>
+    <color name="accent_biru">#82B1FF</color>
+    <color name="accent_toska">#80CBC4</color>
+    <color name="accent_hijau">#A5D6A7</color>
+    <color name="accent_merah">#EF9A9A</color>
+    <color name="accent_oranye">#FFCC80</color>
+    <color name="accent_pink">#F48FB1</color>
+
+    <!-- Wadah tonal (container) untuk tiap aksen, mode gelap. -->
+    <color name="accent_container_indigo">#312E81</color>
+    <color name="accent_container_ungu">#3D354F</color>
+    <color name="accent_container_biru">#2E3B57</color>
+    <color name="accent_container_toska">#2E4347</color>
+    <color name="accent_container_hijau">#38463E</color>
+    <color name="accent_container_merah">#4D363B</color>
+    <color name="accent_container_oranye">#514334</color>
+    <color name="accent_container_pink">#4E3241</color>
+
+    <!-- Teks di atas warna aksen (mode gelap: gelap karena aksennya terang). -->
+    <color name="accent_on_primary">#0F172A</color>
+</resources>

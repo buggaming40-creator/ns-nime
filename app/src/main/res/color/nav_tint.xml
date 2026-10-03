@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Warna TEKS navigasi bawah: label tab aktif memakai aksen tema aktif
+  (?attr/colorPrimary) agar ikut warna pilihan pengguna, label pasif abu netral.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="?attr/colorPrimary" android:state_checked="true" />
+    <item android:color="?attr/colorPrimary" android:state_selected="true" />
+    <item android:color="@color/text_secondary" />
+</selector>

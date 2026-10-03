@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Kotak logo aplikasi (dipadukan dengan ikon play di atasnya);
+     warnanya mengikuti aksen tema aktif. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="?attr/colorPrimary" />
+    <corners android:radius="13dp" />
+</shape>

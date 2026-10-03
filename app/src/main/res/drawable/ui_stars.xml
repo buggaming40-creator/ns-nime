@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Latar bintang tipis untuk header mode gelap. Titiknya diatur manual per
+  posisi (layer-list) supaya tetap ringan; warnanya memakai ui_star_color
+  yang didefinisikan berbeda untuk mode terang/gelap.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:width="3dp" android:height="3dp" android:left="20dp" android:top="12dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/ui_star_color" />
+        </shape>
+    </item>
+    <item android:width="2dp" android:height="2dp" android:left="96dp" android:top="34dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/ui_star_color" />
+        </shape>
+    </item>
+    <item android:width="2dp" android:height="2dp" android:left="160dp" android:top="8dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/ui_star_color" />
+        </shape>
+    </item>
+    <item android:width="4dp" android:height="4dp" android:left="232dp" android:top="26dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/ui_star_color" />
+        </shape>
+    </item>
+    <item android:width="2dp" android:height="2dp" android:left="300dp" android:top="10dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/ui_star_color" />
+        </shape>
+    </item>
+    <item android:width="3dp" android:height="3dp" android:left="340dp" android:top="44dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/ui_star_color" />
+        </shape>
+    </item>
+    <item android:width="2dp" android:height="2dp" android:left="140dp" android:top="56dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/ui_star_color" />
+        </shape>
+    </item>
+    <item android:width="2dp" android:height="2dp" android:left="268dp" android:top="62dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/ui_star_color" />
+        </shape>
+    </item>
+</layer-list>

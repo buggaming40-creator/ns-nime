@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Pil nomor episode pada baris daftar episode: isi wadah aksen supaya
+  warnanya otomatis mengikuti pilihan aksen pengguna.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="?attr/colorPrimaryContainer" />
+    <corners android:radius="99dp" />
+</shape>

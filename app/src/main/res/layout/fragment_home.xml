@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Tab Terbaru (beranda):
+    H-1 header logo + nama + tagline + tombol cari/setelan,
+    H-2 banner carousel unggulan (auto-scroll + indikator dot),
+    H-3 chip filter Semua/Anime/Donghua,
+    H-4 seksi Rilis Terbaru + grid poster,
+    H-5 seksi Sedang Tayang (horizontal, bila ada data),
+    H-6 seksi Top Rating (horizontal, urutan situs, tanpa angka rating),
+    H-7 keadaan kosong/muat berikon.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/window_bg"
+    android:orientation="vertical">
+
+    <!-- H-1: header aplikasi -->
+    <LinearLayout
+        android:id="@+id/uiHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ui_stars"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="10dp">
+
+        <FrameLayout
+            android:layout_width="46dp"
+            android:layout_height="46dp">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/app_logo_bg" />
+
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/logo_desc"
+                android:src="@drawable/ic_play"
+                app:tint="?attr/colorOnPrimary" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textColor="@color/text_primary"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@string/tagline"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- Tombol kotak membulat: buka tab Cari -->
+        <ImageButton
+            android:id="@+id/uiSearchButton"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/ui_bg_icon_button"
+            android:contentDescription="@string/ui_search_desc"
+            android:src="@drawable/ic_search"
+            app:tint="?attr/colorPrimary" />
+
+        <!-- Tombol kotak membulat: buka tab Setelan -->
+        <ImageButton
+            android:id="@+id/btnSettings"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/ui_bg_icon_button"
+            android:contentDescription="@string/nav_settings"
+            android:src="@drawable/ic_settings"
+            app:tint="?attr/colorPrimary" />
+    </LinearLayout>
+
+    <!-- H-2: banner carousel unggulan -->
+    <FrameLayout
+        android:id="@+id/uiBannerBox"
+        android:layout_width="match_parent"
+        android:layout_height="176dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/ui_bg_poster"
+        android:clipToOutline="true"
+        android:visibility="gone">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/uiBanner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" />
+
+        <LinearLayout
+            android:id="@+id/uiDots"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" />
+    </FrameLayout>
+
+    <!-- H-3: dihapus — hanya tampilkan Rilis Terbaru agar bersih -->
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/refresh"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="12dp"
+                android:paddingEnd="6dp"
+                android:paddingStart="6dp"
+                android:scrollbars="vertical" />
+
+            <!-- H-7: keadaan kosong -->
+            <LinearLayout
+                android:id="@+id/emptyBox"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="32dp"
+                android:visibility="gone">
+
+                <FrameLayout
+                    android:layout_width="76dp"
+                    android:layout_height="76dp"
+                    android:background="@drawable/ui_bg_icon_button">
+
+                    <ImageView
+                        android:id="@+id/emptyIcon"
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:layout_gravity="center"
+                        android:alpha="0.75"
+                        android:contentDescription="@string/app_name"
+                        app:tint="?attr/colorPrimary" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/empty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:lineSpacingExtra="5dp"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+        </FrameLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</LinearLayout>

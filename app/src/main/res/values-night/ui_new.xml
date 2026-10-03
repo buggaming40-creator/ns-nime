@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Varian mode gelap untuk sumber daya UI tambahan (restyle).
+  Warna aksen tidak didefinisikan ulang di sini — semuanya lewat ?attr/....
+-->
+<resources>
+    <!-- Titik bintang dekoratif pada latar header (mode gelap: terang tipis). -->
+    <color name="ui_star_color">#1AFFFFFF</color>
+</resources>

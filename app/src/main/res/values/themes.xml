@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.AniStream" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <!-- Wadah aksen memakai token accent_soft (Slate/Indigo §4). -->
+        <item name="colorPrimaryContainer">@color/accent_soft</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorOnSecondary">@color/on_primary</item>
+        <item name="colorSurface">@color/card_bg</item>
+        <!-- Outline tipis 1dp (kartu, kolom pencarian, chip) memakai token border. -->
+        <item name="colorOutline">@color/border</item>
+        <item name="colorOutlineVariant">@color/border</item>
+        <item name="android:colorBackground">@color/window_bg</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:windowBackground">@color/window_bg</item>
+        <item name="android:statusBarColor">@color/window_bg</item>
+        <item name="android:navigationBarColor">@color/nav_bg</item>
+    </style>
+
+    <!-- Layar pemutar: layar penuh, tanpa bilah status. -->
+    <style name="Theme.AniStream.Player" parent="Theme.AniStream">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentTransitions">false</item>
+        <item name="android:statusBarColor">#000000</item>
+        <item name="android:navigationBarColor">#000000</item>
+    </style>
+</resources>

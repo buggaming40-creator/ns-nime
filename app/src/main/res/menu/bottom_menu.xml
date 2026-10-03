@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Menu navigasi bawah: Terbaru, Cari, Tersimpan, Riwayat, Setelan. -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/nav_latest"
+        android:icon="@drawable/ic_home"
+        android:title="@string/nav_latest" />
+    <item android:id="@+id/nav_search"
+        android:icon="@drawable/ic_search"
+        android:title="@string/nav_search" />
+    <item android:id="@+id/nav_saved"
+        android:icon="@drawable/ic_bookmark"
+        android:title="@string/nav_saved" />
+    <item android:id="@+id/nav_history"
+        android:icon="@drawable/ic_history"
+        android:title="@string/nav_history" />
+    <item android:id="@+id/nav_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/nav_settings" />
+</menu>
