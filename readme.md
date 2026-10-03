@@ -6,16 +6,17 @@ Aplikasi Android untuk streaming anime subtitle Indonesia dengan sumber
 ## Fitur
 
 - **Terbaru** — banner carousel + grid Rilis Terbaru, Sedang Tayang, Top Rating.
-- **Cari** — pencarian judul + chip pencarian terakhir (bisa dihapus).
+- **Cari** — live search + jumlah hasil + Jelajahi Genre + chip pencarian terakhir (bisa dihapus).
 - **Tersimpan** — bookmark lokal (SQLite) + lencana "Ada Episode Baru!" + sortir
-  abjad / ditambahkan / diperbarui.
+  abjad / ditambahkan / diperbarui + kategori (Simpan ke + filter).
 - **Riwayat** — progress menit (`mm:ss / mm:ss`), total menit, Lanjutkan
   (one-tap resume), hapus satuan / bersihkan semua.
 - **Detail anime** — poster, judul, baris meta (studio | tipe | status | tahun),
-  chip genre (ketuk = cari), sinopsis + buka/tutup, "Episode (N)" + urut
-  terbaru-dulu / episode-1-dulu, ketuk episode = Putar Sekarang / Unduh (GoFile).
+  chip genre (ketuk = cari), sinopsis + buka/tutup, kartu Lanjutkan Menonton,
+  "Episode (N)" + grid/list + urut + chip rentang, ketuk episode =
+  Putar Sekarang / Unduh (GoFile).
 - **Player** — WebView menangkap URL media → ExoPlayer (resume, menit
-  tersimpan); lanskap; kontrol muncul saat diketuk (ala YouTube, tanpa tombol
+  tersimpan); lanskap; mini-player PiP (bisa dimatikan); kontrol muncul saat diketuk (ala YouTube, tanpa tombol
   ganda); rel kanan: kecepatan 0,5x–2x, prev/next, penghitung, daftar episode,
   ganti server (bila >1 mirror); info 2 baris (anime + episode).
 - **Setelan** — tema Gelap/Terang/Ikuti sistem (bawaan Gelap), 8 warna aksen,
