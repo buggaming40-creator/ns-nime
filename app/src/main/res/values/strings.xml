@@ -187,4 +187,9 @@
     <!-- Setelan: mini-player PiP -->
     <string name="pip_title">Mini-player (PiP)</string>
     <string name="pip_hint">Perkecil video mengambang saat keluar dari player.</string>
+
+    <!-- Kontrol pemutar khusus (player_controls.xml) -->
+    <string name="play_pause">Putar/jeda</string>
+    <string name="prev_episode">Episode sebelumnya</string>
+    <string name="next_episode">Episode berikutnya</string>
 </resources>

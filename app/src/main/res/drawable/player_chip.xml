@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Tombol kaca bundar di bilah atas pemutar: putih 10%, radius 999
-  (mengikuti gaya pil kaca dekompilasi, bukan kotak ber-outline).
--->
+<!-- Chip pil putih 10%: tombol kaca pemutar (kembali, gembok, pil aksi). -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <solid android:color="@color/player_chip" />

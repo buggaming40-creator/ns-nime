@@ -9,14 +9,14 @@
     android:id="@+id/rootFrame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/window_bg"
+    android:background="@color/player_bg"
     android:keepScreenOn="true">
 
     <LinearLayout
         android:id="@+id/contentRoot"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/window_bg"
+        android:background="@color/player_bg"
         android:orientation="vertical">
 
         <!-- Kotak video: 16:9 di potret, penuh di lanskap -->
@@ -24,7 +24,7 @@
             android:id="@+id/videoBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#000000">
+            android:background="@color/player_bg">
 
             <WebView
                 android:id="@+id/webview"
@@ -38,6 +38,7 @@
                 android:layout_height="match_parent"
                 android:keepScreenOn="true"
                 android:visibility="gone"
+                app:controller_layout_id="@layout/player_controls"
                 app:resize_mode="fit"
                 app:show_buffering="always"
                 app:use_controller="true" />
@@ -60,7 +61,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="@string/loading_player"
-                    android:textColor="#CCCCCC" />
+                    android:textColor="@color/player_text2"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <!-- Bilah atas: tombol kembali + judul (mengikuti kontrol) -->
@@ -95,10 +97,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
+                        android:fontFamily="sans-serif-medium"
                         android:maxLines="1"
                         android:textColor="#FFFFFF"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/subtitle"
@@ -106,7 +108,7 @@
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:maxLines="1"
-                        android:textColor="#BDBDCB"
+                        android:textColor="@color/player_text3"
                         android:textSize="12sp" />
                 </LinearLayout>
 
@@ -122,13 +124,27 @@
                     app:tint="#FFFFFF" />
             </LinearLayout>
 
-            <!-- Tombol fullscreen di atas video (ala YouTube, ikut kontrol) -->
+            <!-- Tombol putar besar di tengah (muncul saat jeda, ala AnimeLovers) -->
+            <ImageButton
+                android:id="@+id/btnCenterPlay"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:background="@drawable/player_chip"
+                android:contentDescription="@string/play_pause"
+                android:padding="15dp"
+                android:src="@drawable/ic_play"
+                android:visibility="gone"
+                app:tint="#FFFFFF" />
+
+            <!-- Tombol fullscreen di atas video, melayang di atas pil kontrol -->
             <ImageButton
                 android:id="@+id/btnFsOverlay"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="bottom|end"
-                android:layout_margin="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="78dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/fullscreen"
                 android:padding="12dp"
@@ -142,9 +158,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:background="#99000000"
-                android:paddingHorizontal="14dp"
-                android:paddingVertical="8dp"
+                android:background="@drawable/player_flash"
+                android:paddingHorizontal="18dp"
+                android:paddingVertical="10dp"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -157,7 +173,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="@color/window_bg"
+            android:background="@color/player_bg"
             android:clipToPadding="false"
             android:fillViewport="true"
             android:scrollbars="none">
@@ -166,7 +182,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:paddingHorizontal="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="24dp">
 
                 <TextView
                     android:id="@+id/infoTitle"
@@ -174,7 +192,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="2"
-                    android:textColor="@color/text_primary"
+                    android:textColor="#FFFFFF"
                     android:textSize="17sp"
                     android:textStyle="bold" />
 
@@ -185,7 +203,7 @@
                     android:layout_marginTop="3dp"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="@color/player_text3"
                     android:textSize="13sp" />
 
                 <!-- Baris aksi potret: pil berlabel jelas (ala Animok) -->
@@ -212,9 +230,12 @@
                             android:minWidth="0dp"
                             android:text="1×"
                             android:textAllCaps="false"
+                            android:textColor="#FFFFFF"
                             android:textSize="13sp"
-                            android:textStyle="bold"
-                            app:cornerRadius="20dp" />
+                            android:fontFamily="sans-serif-medium"
+                            app:backgroundTint="@color/player_chip"
+                            app:cornerRadius="20dp"
+                            app:rippleColor="#33FFFFFF" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnServerP"
@@ -225,9 +246,12 @@
                             android:minWidth="0dp"
                             android:text="S1"
                             android:textAllCaps="false"
+                            android:textColor="#FFFFFF"
                             android:textSize="13sp"
-                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-medium"
+                            app:backgroundTint="@color/player_chip"
                             app:cornerRadius="20dp"
+                            app:rippleColor="#33FFFFFF"
                             android:visibility="gone" /><com.google.android.material.button.MaterialButton
                             android:id="@+id/btnDownloadP"
                             style="@style/Widget.Material3.Button.TonalButton"
@@ -237,12 +261,16 @@
                             android:minWidth="0dp"
                             android:text="@string/download"
                             android:textAllCaps="false"
+                            android:textColor="#FFFFFF"
                             android:textSize="13sp"
-                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-medium"
+                            app:backgroundTint="@color/player_chip"
                             app:cornerRadius="20dp"
                             app:icon="@drawable/ic_download"
+                            app:iconTint="#FFFFFF"
                             app:iconGravity="textStart"
-                            app:iconSize="16dp" />
+                            app:iconSize="16dp"
+                            app:rippleColor="#33FFFFFF" />
 
                     </LinearLayout>
                 </HorizontalScrollView>
@@ -253,8 +281,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="@string/all_episodes"
-                    android:textColor="@color/text_primary"
-                    android:textSize="18sp"
+                    android:textColor="#FFFFFF"
+                    android:textSize="17sp"
                     android:textStyle="bold" />
 
                 <androidx.recyclerview.widget.RecyclerView

@@ -52,4 +52,19 @@
 
     <!-- Teks di atas warna aksen (mode terang: putih). -->
     <color name="accent_on_primary">#FFFFFF</color>
+
+    <!--
+      Layar pemutar: SELALU gelap (deklarasi watch asli juga gelap), palet
+      keluarga ungu-gelap. Dipakai konkret — tidak ikut mode terang/gelap.
+    -->
+    <color name="player_bg">#16131E</color>
+    <color name="player_surface">#1E1830</color>
+    <color name="player_bar">#C71E1830</color>
+    <color name="player_chip">#1AFFFFFF</color>
+    <color name="player_text2">#B3FFFFFF</color>
+    <color name="player_text3">#99FFFFFF</color>
+    <!-- Progres: putih penuh / buffer 38% / sisa 24% (proporsi asli dekompilasi). -->
+    <color name="player_progress_played">#FFFFFF</color>
+    <color name="player_progress_buffered">#61FFFFFF</color>
+    <color name="player_progress_unplayed">#3DFFFFFF</color>
 </resources>

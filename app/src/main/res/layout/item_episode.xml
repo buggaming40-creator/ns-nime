@@ -8,11 +8,11 @@
     android:layout_marginVertical="4dp"
     android:clickable="true"
     android:focusable="true"
-    app:cardBackgroundColor="@color/card_bg"
+    app:cardBackgroundColor="@color/player_surface"
     app:cardCornerRadius="14dp"
     app:cardElevation="0dp"
-    app:rippleColor="?attr/colorPrimaryContainer"
-    app:strokeColor="@color/border"
+    app:rippleColor="#33FFFFFF"
+    app:strokeColor="#14FFFFFF"
     app:strokeWidth="1dp">
 
     <LinearLayout
@@ -27,11 +27,11 @@
             android:id="@+id/num"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/ui_bg_episode_num"
+            android:background="@drawable/player_chip"
             android:minWidth="44dp"
             android:paddingHorizontal="10dp"
             android:paddingVertical="5dp"
-            android:textColor="?attr/colorOnPrimaryContainer"
+            android:textColor="#FFFFFF"
             android:gravity="center"
             android:textSize="12sp"
             android:textStyle="bold" />
@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:textColor="@color/text_primary"
+                android:textColor="#FFFFFF"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -58,7 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:textColor="@color/text_secondary"
+                android:textColor="@color/player_text3"
                 android:textSize="11sp" />
         </LinearLayout>
     </LinearLayout>

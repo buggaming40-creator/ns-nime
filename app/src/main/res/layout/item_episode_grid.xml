@@ -7,11 +7,11 @@
     android:layout_margin="4dp"
     android:clickable="true"
     android:focusable="true"
-    app:cardBackgroundColor="@color/card_bg"
+    app:cardBackgroundColor="@color/player_surface"
     app:cardCornerRadius="14dp"
     app:cardElevation="0dp"
-    app:rippleColor="?attr/colorPrimaryContainer"
-    app:strokeColor="@color/border"
+    app:rippleColor="#33FFFFFF"
+    app:strokeColor="#14FFFFFF"
     app:strokeWidth="1dp">
 
     <LinearLayout
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textColor="@color/text_primary"
+            android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -38,7 +38,7 @@
             android:layout_marginTop="2dp"
             android:gravity="center"
             android:maxLines="1"
-            android:textColor="@color/text_secondary"
+            android:textColor="@color/player_text3"
             android:textSize="10sp" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

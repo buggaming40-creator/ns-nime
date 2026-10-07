@@ -19,11 +19,12 @@
         <item name="android:navigationBarColor">@color/nav_bg</item>
     </style>
 
-    <!-- Layar pemutar: layar penuh, tanpa bilah status. -->
+    <!-- Layar pemutar: layar penuh, tanpa bilah status, latar selalu gelap. -->
     <style name="Theme.AniStream.Player" parent="Theme.AniStream">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentTransitions">false</item>
+        <item name="android:windowBackground">@color/player_bg</item>
         <item name="android:statusBarColor">#000000</item>
-        <item name="android:navigationBarColor">#000000</item>
+        <item name="android:navigationBarColor">@color/player_bg</item>
     </style>
 </resources>
