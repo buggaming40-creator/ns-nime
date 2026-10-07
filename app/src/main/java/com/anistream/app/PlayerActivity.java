@@ -14,6 +14,7 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -70,6 +71,10 @@ public class PlayerActivity extends AppCompatActivity {
     private TextView infoTitle, infoSub, epListTitle;
     /** Rel episode siap (lebih dari 1 episode) — tampil hanya saat kontrol terlihat. */
     private boolean railReady;
+    /** Kunci layar aktif — sentuhan video diabaikan, kontrol disembunyikan. */
+    private boolean locked;
+    /** Upaya auto-pindah server setelah error (tiap mirror dicoba sekali). */
+    private int autoServerTries;
 
     /** Langkah kecepatan putar yang bisa dipilih. */
     private static final float[] SPEEDS = {0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f};
@@ -179,6 +184,8 @@ public class PlayerActivity extends AppCompatActivity {
         }
         View fsOverlay = findViewById(R.id.btnFsOverlay);
         if (fsOverlay != null) fsOverlay.setOnClickListener(v -> toggleFullscreen());
+        View lockBtn = findViewById(R.id.btnLock);
+        if (lockBtn != null) lockBtn.setOnClickListener(v -> setLocked(!locked));
 
         // Daftar episode di bawah video (pengganti komen).
         RecyclerView epList = findViewById(R.id.epList);
@@ -201,10 +208,14 @@ public class PlayerActivity extends AppCompatActivity {
                 new PlayerView.ControllerVisibilityListener() {
                     @Override
                     public void onVisibilityChanged(int visibility) {
-                        if (topbar != null && exoStarted) topbar.setVisibility(visibility);
+                        if (topbar != null && exoStarted) {
+                            // Terkunci: topbar tetap tampil agar gembok terjangkau.
+                            topbar.setVisibility(locked ? View.VISIBLE : visibility);
+                        }
                         View fsOv = findViewById(R.id.btnFsOverlay);
                         if (fsOv != null) {
-                            fsOv.setVisibility(exoStarted && visibility == View.VISIBLE
+                            fsOv.setVisibility(!locked && exoStarted
+                                    && visibility == View.VISIBLE
                                     ? View.VISIBLE : View.GONE);
                         }
                         if (visibility == View.VISIBLE) wireControllerPrevNext();
@@ -226,6 +237,7 @@ public class PlayerActivity extends AppCompatActivity {
 
                             @Override
                             public boolean onSingleTapConfirmed(android.view.MotionEvent e) {
+                                if (locked) return true;
                                 if (playerView != null && exoStarted) {
                                     if (playerView.isControllerFullyVisible()) {
                                         playerView.hideController();
@@ -242,6 +254,7 @@ public class PlayerActivity extends AppCompatActivity {
 
                             @Override
                             public boolean onDoubleTap(android.view.MotionEvent e) {
+                                if (locked) return true;
                                 if (player == null || !exoStarted
                                         || playerView == null) {
                                     return true;
@@ -486,6 +499,8 @@ public class PlayerActivity extends AppCompatActivity {
                 @Override public void onPlaybackStateChanged(int state) {
                     if (state == Player.STATE_READY && !seekDone) {
                         seekDone = true;
+                        // Sukses muter: anggaran auto-pindah server diisi ulang.
+                        autoServerTries = 0;
                         if (savedPos > 0) player.seekTo(savedPos);
                         overlay.setVisibility(View.GONE);
                         // Penyembunyian bilah atas diserahkan pada listener
@@ -495,7 +510,19 @@ public class PlayerActivity extends AppCompatActivity {
                 }
 
                 @Override public void onPlayerError(androidx.media3.common.PlaybackException e) {
-                    // Kembalikan ke WebView bila URL langsung ditolak.
+                    // Mirror ngadat: coba server lain dulu sebelum menyerah ke mode web.
+                    if (!mirrorList.isEmpty() && mirrorList.size() > 1
+                            && autoServerTries < mirrorList.size() - 1
+                            && !isFinishing() && !isDestroyed()) {
+                        autoServerTries++;
+                        int next = (mirrorIdx + 1) % mirrorList.size();
+                        String from = serverLabel(mirrorIdx);
+                        switchToServer(next);
+                        status.setText(getString(R.string.server_auto_fmt,
+                                from, serverLabel(next)));
+                        return;
+                    }
+                    // Semua server dicoba — kembalikan ke WebView.
                     releasePlayer();
                     exoStarted = false;
                     modeBadge.setText(R.string.web_mode);
@@ -571,6 +598,12 @@ public class PlayerActivity extends AppCompatActivity {
         seekDone = false;
         mediaUrl = null;
         attempts = 0;
+        autoServerTries = 0;
+        if (locked) {
+            locked = false;
+            syncLockIcon();
+        }
+        if (playerView != null) playerView.setUseController(true);
         tick.removeCallbacks(fallbackRun);
         modeBadge.setVisibility(View.GONE);
         // Bungkam suara episode lama sebelum memuat yang baru.
@@ -830,6 +863,36 @@ public class PlayerActivity extends AppCompatActivity {
         }
     };
 
+    /** Kunci/buka kunci layar: terkunci = tap video diabaikan, kontrol disembunyi. */
+    private void setLocked(boolean v) {
+        if (isFinishing() || isDestroyed()) return;
+        locked = v;
+        syncLockIcon();
+        if (playerView != null) {
+            if (locked) {
+                playerView.hideController();
+                playerView.setUseController(false);
+            } else if (exoStarted) {
+                playerView.setUseController(true);
+                playerView.showController();
+            }
+        }
+        if (locked && topbar != null && exoStarted) {
+            topbar.setVisibility(View.VISIBLE);
+        }
+        Toast.makeText(this, locked ? R.string.screen_locked
+                : R.string.screen_unlocked, Toast.LENGTH_SHORT).show();
+    }
+
+    /** Ikon gembok mengikuti status kunci. */
+    private void syncLockIcon() {
+        if (isFinishing() || isDestroyed()) return;
+        ImageButton b = findViewById(R.id.btnLock);
+        if (b == null) return;
+        b.setImageResource(locked ? R.drawable.ic_lock : R.drawable.ic_lock_open);
+        b.setContentDescription(getString(locked ? R.string.unlock : R.string.lock));
+    }
+
     /** Tombol fullscreen: kunci lanskap / kembali mengikuti sensor. */
     private void toggleFullscreen() {
         boolean toLand = !isLandscape();
@@ -983,7 +1046,15 @@ public class PlayerActivity extends AppCompatActivity {
                 .setTitle(R.string.server_title)
                 .setSingleChoiceItems(names, mirrorIdx, (d, which) -> {
                     d.dismiss();
-                    if (which != mirrorIdx) switchToServer(which);
+                    if (which != mirrorIdx) {
+                        autoServerTries = 0;
+                        if (locked) {
+                            locked = false;
+                            syncLockIcon();
+                        }
+                        if (playerView != null) playerView.setUseController(true);
+                        switchToServer(which);
+                    }
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .show();
@@ -994,6 +1065,12 @@ public class PlayerActivity extends AppCompatActivity {
     /** Ganti server: muat ulang mirror berikutnya lalu tangkap ulang media. */
     private void switchServer() {
         if (mirrorList.size() <= 1 || isFinishing() || isDestroyed()) return;
+        autoServerTries = 0;
+        if (locked) {
+            locked = false;
+            syncLockIcon();
+        }
+        if (playerView != null) playerView.setUseController(true);
         switchToServer((mirrorIdx + 1) % mirrorList.size());
     }
 

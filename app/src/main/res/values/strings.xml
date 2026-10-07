@@ -97,6 +97,11 @@
     <string name="next_ep">Episode berikutnya</string>
     <string name="fullscreen">Layar penuh</string>
     <string name="ep_counter">%1$d / %2$d</string>
+    <string name="server_auto_fmt">Server %1$s gagal, pindah ke %2$s…</string>
+    <string name="lock">Kunci layar</string>
+    <string name="unlock">Buka kunci</string>
+    <string name="screen_locked">Layar dikunci</string>
+    <string name="screen_unlocked">Kunci dibuka</string>
 
     <!-- Navigasi: tab Tersimpan (tahap 2) -->
     <string name="nav_saved">Tersimpan</string>

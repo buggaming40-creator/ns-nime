@@ -109,6 +109,17 @@
                         android:textColor="#BDBDCB"
                         android:textSize="12sp" />
                 </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/btnLock"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/ui_bg_player_button"
+                    android:contentDescription="@string/lock"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_lock_open"
+                    app:tint="#FFFFFF" />
             </LinearLayout>
 
             <!-- Tombol fullscreen di atas video (ala YouTube, ikut kontrol) -->
