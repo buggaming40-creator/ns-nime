@@ -213,9 +213,17 @@ public class PlayerActivity extends AppCompatActivity {
 
         // Ketuk ganda kiri/kanan = mundur/maju 10 detik (ala YouTube).
         // Kontroler bawaan tetap untuk tombolnya; area video ditangani di sini.
+        // hideOnTouch dimatikan agar toggle kontrol hanya dari GestureDetector
+        // (kalau dobel, tap sekali bisa batal sendiri: bawaan + manual).
+        playerView.setControllerHideOnTouch(false);
         final android.view.GestureDetector taps =
                 new android.view.GestureDetector(this,
                         new android.view.GestureDetector.SimpleOnGestureListener() {
+                            @Override
+                            public boolean onDown(android.view.MotionEvent e) {
+                                return true;
+                            }
+
                             @Override
                             public boolean onSingleTapConfirmed(android.view.MotionEvent e) {
                                 if (playerView != null && exoStarted) {
@@ -224,6 +232,10 @@ public class PlayerActivity extends AppCompatActivity {
                                     } else {
                                         playerView.showController();
                                     }
+                                } else if (topbar != null) {
+                                    // Mode web (belum Exo): tap tetap buka/tutup bilah atas.
+                                    topbar.setVisibility(topbar.getVisibility() == View.VISIBLE
+                                            ? View.GONE : View.VISIBLE);
                                 }
                                 return true;
                             }
@@ -247,7 +259,13 @@ public class PlayerActivity extends AppCompatActivity {
                                 return true;
                             }
                         });
-        playerView.setOnTouchListener((v, ev) -> taps.onTouchEvent(ev));
+        playerView.setOnTouchListener((v, ev) -> {
+            boolean r = taps.onTouchEvent(ev);
+            if (ev.getAction() == android.view.MotionEvent.ACTION_UP) {
+                v.performClick();
+            }
+            return true;
+        });
 
         store = new HistoryStore(this);
         newEpisodeState();
