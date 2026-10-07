@@ -155,6 +155,8 @@ public class PlayerActivity extends AppCompatActivity {
         playerView = findViewById(R.id.playerView);
         overlay = findViewById(R.id.overlay);
         topbar = findViewById(R.id.topbar);
+        videoBox = findViewById(R.id.videoBox);
+        portraitScroll = findViewById(R.id.portraitScroll);
         status = findViewById(R.id.status);
         titleBar = findViewById(R.id.title);
         subtitleBar = findViewById(R.id.subtitle);
@@ -186,6 +188,7 @@ public class PlayerActivity extends AppCompatActivity {
             epList.setLayoutManager(new LinearLayoutManager(this));
             epList.setAdapter(epAdapter);
         }
+        watchTopInset();
         applyOrientation(isLandscape());
 
         // Preferensi pemutar: aspect ratio (Setelan → Player).
@@ -705,40 +708,66 @@ public class PlayerActivity extends AppCompatActivity {
         if (portraitScroll != null) {
             portraitScroll.setVisibility(landscape ? View.GONE : View.VISIBLE);
         }
-        if (videoBox != null) {
-            android.view.ViewGroup.LayoutParams lp = videoBox.getLayoutParams();
-            if (landscape) {
-                lp.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-                lp.height = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-            } else {
-                lp.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-                lp.height = android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-            }
-            // Potret: beri ruang kamera depan (poni) agar video tidak tertutup.
-            if (lp instanceof android.widget.LinearLayout.LayoutParams) {
-                ((android.widget.LinearLayout.LayoutParams) lp).topMargin =
-                        landscape ? 0 : topInset();
-            }
-            videoBox.setLayoutParams(lp);
-        }
+        applyVideoBoxLp();
         updateRail();
     }
 
-    /** Tinggi status bar + poni presisi (poni diukur, bukan tebakan),
-     * plus napas agar video/ketukan tak mepet lingkaran kamera. */
-    private int topInset() {
-        int sb = statusBarHeight();
-        int cut = 0;
-        try {
-            if (android.os.Build.VERSION.SDK_INT >= 30) {
-                android.view.WindowInsets wi = getWindowManager()
-                        .getCurrentWindowMetrics().getWindowInsets();
-                android.view.DisplayCutout dc = wi.getDisplayCutout();
-                if (dc != null) cut = dc.getSafeInsetTop();
-            }
-        } catch (Throwable ignored) {
+    /** Tinggi status bar + poni untuk mode potret (diukur live via insets,
+     * diperbarui otomatis bila berubah). */
+    private int portraitTopPx = -1;
+
+    /**
+     * Ukur ruang atas presisi (status bar + poni) lewat listener insets resmi
+     * — jalan di semua API dan ikut berubah bila konfigurasi berubah.
+     * Dipanggil sekali; hasilnya dipakai applyOrientation().
+     */
+    private void watchTopInset() {
+        if (videoBox == null) return;
+        portraitTopPx = statusBarHeight() + dp(16);
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(
+                videoBox, (v, insets) -> {
+                    int cut = 0, sb = 0;
+                    try {
+                        cut = insets.getInsets(
+                                androidx.core.view.WindowInsetsCompat.Type
+                                        .displayCutout()).top;
+                        sb = insets.getInsets(
+                                androidx.core.view.WindowInsetsCompat.Type
+                                        .statusBars()).top;
+                    } catch (Throwable ignored) {
+                    }
+                    int want = Math.max(sb, cut) + dp(16);
+                    if (want != portraitTopPx) {
+                        portraitTopPx = want;
+                        if (!isLandscape()) applyVideoBoxLp();
+                    }
+                    return insets;
+                });
+        androidx.core.view.ViewCompat.requestApplyInsets(videoBox);
+    }
+
+    /** Nilai ruang atas saat ini (fallback bila listener belum jalan). */
+    private int portraitTop() {
+        return portraitTopPx < 0 ? statusBarHeight() + dp(16) : portraitTopPx;
+    }
+
+    /** Terapkan ukuran videoBox sesuai orientasi (dipakai ulang listener). */
+    private void applyVideoBoxLp() {
+        if (videoBox == null) return;
+        boolean landscape = isLandscape();
+        android.view.ViewGroup.LayoutParams lp = videoBox.getLayoutParams();
+        if (landscape) {
+            lp.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+            lp.height = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+        } else {
+            lp.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+            lp.height = android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
         }
-        return Math.max(sb, cut) + dp(12);
+        if (lp instanceof android.widget.LinearLayout.LayoutParams) {
+            ((android.widget.LinearLayout.LayoutParams) lp).topMargin =
+                    landscape ? 0 : portraitTop();
+        }
+        videoBox.setLayoutParams(lp);
     }
 
     /** Tinggi status bar (tetap ada walau disembunyikan imersif). */
