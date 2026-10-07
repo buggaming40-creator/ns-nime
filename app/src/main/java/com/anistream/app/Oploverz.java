@@ -47,7 +47,6 @@ public final class Oploverz {
         public String released = "";
         public String synopsis = "";
         public final List<String> genres = new ArrayList<>();
-        public final List<String> casts = new ArrayList<>();
         public String seriesUrl = "";
         public List<EpisodeItem> episodes = new ArrayList<>();
     }
@@ -140,7 +139,6 @@ public final class Oploverz {
             if (s.released.isEmpty()) s.released = full.released;
             if (s.synopsis.isEmpty()) s.synopsis = full.synopsis;
             if (s.genres.isEmpty()) s.genres.addAll(full.genres);
-            if (s.casts.isEmpty()) s.casts.addAll(full.casts);
         }
         return s;
     }
@@ -216,15 +214,6 @@ public final class Oploverz {
             String t = g.text().replaceAll("\\s+", " ").trim();
             if (!t.isEmpty() && seenGenre.add(t) && s.genres.size() < 8) {
                 s.genres.add(t);
-            }
-        }
-
-        // ---- pengisi suara (tautan /cast/, teks saja — tanpa foto) -----------
-        Set<String> seenCast = new LinkedHashSet<>();
-        for (Element c : doc.select("a[href*=/cast/]")) {
-            String t = c.text().replaceAll("\\s+", " ").trim();
-            if (!t.isEmpty() && seenCast.add(t) && s.casts.size() < 10) {
-                s.casts.add(t);
             }
         }
 

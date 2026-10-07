@@ -58,17 +58,16 @@ public class PlayerActivity extends AppCompatActivity {
 
     private WebView web;
     private PlayerView playerView;
-    private View overlay, topbar, btnPrev, btnNext, btnEps, btnDownload, btnFs;
-    private LinearLayout sideRail;
+    private View overlay, topbar;
     private View videoBox, portraitScroll;
     private EpisodeAdapter epAdapter;
     private com.google.android.material.button.MaterialButton
-            btnSpeedP, btnServerP, btnQualityP, btnDownloadP, btnPrevP, btnNextP;
+            btnSpeedP, btnServerP, btnQualityP, btnDownloadP;
     /** Kunci orientasi via tombol fullscreen (kembali sensor saat dilepas). */
     private int lastOrientationReq =
             android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR;
-    private TextView status, titleBar, subtitleBar, modeBadge, epCounter, qualityBadge;
-    private TextView btnSpeed, btnServer, infoTitle, infoSub, epListTitle;
+    private TextView status, titleBar, subtitleBar, modeBadge, qualityBadge;
+    private TextView infoTitle, infoSub, epListTitle;
     /** Rel episode siap (lebih dari 1 episode) — tampil hanya saat kontrol terlihat. */
     private boolean railReady;
 
@@ -156,10 +155,6 @@ public class PlayerActivity extends AppCompatActivity {
         playerView = findViewById(R.id.playerView);
         overlay = findViewById(R.id.overlay);
         topbar = findViewById(R.id.topbar);
-        sideRail = findViewById(R.id.sideRail);
-        btnPrev = findViewById(R.id.btnPrev);
-        btnNext = findViewById(R.id.btnNext);
-        epCounter = findViewById(R.id.epCounter);
         status = findViewById(R.id.status);
         titleBar = findViewById(R.id.title);
         subtitleBar = findViewById(R.id.subtitle);
@@ -168,42 +163,12 @@ public class PlayerActivity extends AppCompatActivity {
 
         syncTitle();
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
-        btnPrev.setOnClickListener(v -> gotoEpisode(epIndex - 1));
-        btnNext.setOnClickListener(v -> gotoEpisode(epIndex + 1));
-
-        // Kecepatan putar, daftar episode, dan ganti server (ala AL).
-        btnSpeed = findViewById(R.id.btnSpeed);
-        btnEps = findViewById(R.id.btnEps);
-        btnServer = findViewById(R.id.btnServer);
-        if (btnSpeed != null) {
-            syncSpeedLabel();
-            btnSpeed.setOnClickListener(v -> cycleSpeed());
-        }
-        if (btnEps != null) btnEps.setOnClickListener(v -> showEpisodePicker());
-        if (btnServer != null) btnServer.setOnClickListener(v -> switchServer());
-        btnDownload = findViewById(R.id.btnDownload);
-        if (btnDownload != null) btnDownload.setOnClickListener(v -> downloadCurrent());
-
-        // Layar tonton adaptif: potret (info + aksi + daftar) / lanskap (penuh).
-        videoBox = findViewById(R.id.videoBox);
-        portraitScroll = findViewById(R.id.portraitScroll);
-        infoTitle = findViewById(R.id.infoTitle);
-        infoSub = findViewById(R.id.infoSub);
-        epListTitle = findViewById(R.id.epListTitle);
-        RecyclerView epList = findViewById(R.id.epList);
-        epAdapter = new EpisodeAdapter(item ->
-                gotoEpisode(epUrls.indexOf(item.url)));
-        epList.setLayoutManager(new LinearLayoutManager(this));
-        epList.setAdapter(epAdapter);
-        findViewById(R.id.btnFs).setOnClickListener(v -> toggleFullscreen());
 
         // Pil potret berlabel jelas (tap = dialog pilihan, ala Animok).
         btnSpeedP = findViewById(R.id.btnSpeedP);
         btnServerP = findViewById(R.id.btnServerP);
         btnQualityP = findViewById(R.id.btnQualityP);
         btnDownloadP = findViewById(R.id.btnDownloadP);
-        btnPrevP = findViewById(R.id.btnPrevP);
-        btnNextP = findViewById(R.id.btnNextP);
         if (btnSpeedP != null) {
             syncSpeedLabel();
             btnSpeedP.setOnClickListener(v -> showSpeedSheet());
@@ -216,28 +181,31 @@ public class PlayerActivity extends AppCompatActivity {
         if (btnDownloadP != null) {
             btnDownloadP.setOnClickListener(v -> downloadCurrent());
         }
-        if (btnPrevP != null) btnPrevP.setOnClickListener(v -> gotoEpisode(epIndex - 1));
-        if (btnNextP != null) btnNextP.setOnClickListener(v -> gotoEpisode(epIndex + 1));
         findViewById(R.id.btnFsP).setOnClickListener(v -> toggleFullscreen());
+
+        // Daftar episode di bawah video (pengganti komen).
+        RecyclerView epList = findViewById(R.id.epList);
+        if (epList != null) {
+            epAdapter = new EpisodeAdapter(item ->
+                    gotoEpisode(epUrls.indexOf(item.url)));
+            epList.setLayoutManager(new LinearLayoutManager(this));
+            epList.setAdapter(epAdapter);
+        }
         applyOrientation(isLandscape());
 
         // Preferensi pemutar: aspect ratio & label kualitas (Setelan → Player).
         applyRatio();
         syncQualityLabel();
 
-        // Kontrol bawaan ExoPlayer punya tombol prev/next di TENGAH — disembunyikan
-        // supaya tidak dobel dengan rel episode di sisi kanan. Rel + bilah atas
-        // mengikuti visibilitas kontrol (muncul saat video diketuk, ala YouTube).
-        hideDefaultPrevNext();
+        // Bilah atas mengikuti kontrol player (muncul saat video diketuk).
+        // Tombol prev/next bawaan kontrol dipakai untuk pindah episode
+        // (disambung di wireControllerPrevNext saat kontrol tampil).
         playerView.setControllerVisibilityListener(
                 new PlayerView.ControllerVisibilityListener() {
                     @Override
                     public void onVisibilityChanged(int visibility) {
                         if (topbar != null && exoStarted) topbar.setVisibility(visibility);
-                        // Rel sisi hanya di lanskap; potret jadi baris aksi tetap.
-                        if (sideRail != null && railReady && isLandscape()) {
-                            sideRail.setVisibility(visibility);
-                        }
+                        if (visibility == View.VISIBLE) wireControllerPrevNext();
                     }
                 });
 
@@ -614,59 +582,44 @@ public class PlayerActivity extends AppCompatActivity {
 
     private void updateRail() {
         railReady = epIndex >= 0 && epUrls.size() > 1;
-        // Rel sisi KHUSUS lanskap; potret memakai pil berlabel di bawah video.
-        if (sideRail != null && !isLandscape()) sideRail.setVisibility(View.GONE);
-        if (!railReady || sideRail == null) {
-            setNavButtonsVisible(false);
-            syncEpList();
-            syncPillStates();
-            return;
-        }
-
-        epCounter.setText(getString(R.string.ep_counter, epIndex + 1, epUrls.size()));
-
-        boolean canPrev = epIndex > 0;
-        boolean canNext = epIndex < epUrls.size() - 1;
-        btnPrev.setEnabled(canPrev);
-        btnNext.setEnabled(canNext);
-        btnPrev.setAlpha(canPrev ? 1f : 0.3f);
-        btnNext.setAlpha(canNext ? 1f : 0.3f);
-
-        setNavButtonsVisible(true);
-        updateServerButton();
         syncEpList();
         syncPillStates();
-
-        // Lanskap ala YouTube: rel hanya tampil saat kontrol terlihat.
-        // Sebelum Exo jalan (mode WebView) kontrol tak ada — tampilkan langsung.
-        boolean controls = !exoStarted
-                || (playerView != null && playerView.isControllerFullyVisible());
-        sideRail.setVisibility(controls ? View.VISIBLE : View.GONE);
+        wireControllerPrevNext();
     }
 
     /** Sinkronkan pil potret: label + aktif/rentang sesuai ketersediaan. */
     private void syncPillStates() {
-        boolean multi = epIndex >= 0 && epUrls.size() > 1;
-        if (btnPrevP != null) {
-            btnPrevP.setEnabled(multi && epIndex > 0);
-            btnPrevP.setAlpha(multi && epIndex > 0 ? 1f : 0.4f);
-        }
-        if (btnNextP != null) {
-            btnNextP.setEnabled(multi && epIndex < epUrls.size() - 1);
-            btnNextP.setAlpha(multi && epIndex < epUrls.size() - 1 ? 1f : 0.4f);
-        }
         if (btnServerP != null) {
             btnServerP.setVisibility(mirrorList.size() > 1 ? View.VISIBLE : View.GONE);
         }
     }
 
-    /** Tampilkan/sembunyikan tombol navigasi episode (prev/counter/next/daftar). */
-    private void setNavButtonsVisible(boolean show) {
-        int v = show ? View.VISIBLE : View.GONE;
-        if (btnPrev != null) btnPrev.setVisibility(v);
-        if (btnNext != null) btnNext.setVisibility(v);
-        if (btnEps != null) btnEps.setVisibility(v);
-        if (epCounter != null) epCounter.setVisibility(v);
+    /**
+     * Sambungkan tombol prev/next TENGAH bawaan kontrol Exo ke pindah episode
+     * (ala YouTube playlist). Kontrol di-inflate malas — pasang ulang tiap
+     * kontrol tampil. Tanpa daftar episode, biarkan perilaku bawaan.
+     */
+    private void wireControllerPrevNext() {
+        if (playerView == null || !railReady) return;
+        try {
+            View prev = playerView.findViewById(
+                    androidx.media3.ui.R.id.exo_prev);
+            View next = playerView.findViewById(
+                    androidx.media3.ui.R.id.exo_next);
+            if (prev != null) {
+                prev.setOnClickListener(v -> gotoEpisode(epIndex - 1));
+                prev.setEnabled(epIndex > 0);
+                prev.setAlpha(epIndex > 0 ? 1f : 0.3f);
+            }
+            if (next != null) {
+                next.setOnClickListener(v -> gotoEpisode(epIndex + 1));
+                boolean can = epIndex < epUrls.size() - 1;
+                next.setEnabled(can);
+                next.setAlpha(can ? 1f : 0.3f);
+            }
+        } catch (Throwable ignored) {
+            // Id internal berubah di versi Media3 lain — bukan fatal.
+        }
     }
 
     // ------------------------------------------------- orientasi potret/lanskap
@@ -682,7 +635,7 @@ public class PlayerActivity extends AppCompatActivity {
         applyOrientation(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE);
     }
 
-    /** Potret: info + aksi + daftar. Lanskap: video penuh + rel sisi. */
+    /** Potret: info + aksi + daftar. Lanskap: video penuh. */
     private void applyOrientation(boolean landscape) {
         if (portraitScroll != null) {
             portraitScroll.setVisibility(landscape ? View.GONE : View.VISIBLE);
@@ -698,17 +651,10 @@ public class PlayerActivity extends AppCompatActivity {
             }
             videoBox.setLayoutParams(lp);
         }
-        moveRail(!landscape);
         updateRail();
-        syncPillStates();
     }
 
     /** Rel sisi menetap di root (hanya lanskap); pil potret statis di XML. */
-    private void moveRail(boolean portrait) {
-        if (sideRail == null) return;
-        sideRail.setOrientation(portrait
-                ? LinearLayout.HORIZONTAL : LinearLayout.VERTICAL);
-    }
 
     /** Tombol fullscreen: kunci lanskap / kembali mengikuti sensor. */
     private void toggleFullscreen() {
@@ -791,7 +737,6 @@ public class PlayerActivity extends AppCompatActivity {
     /** Label tombol kecepatan ("1×", "1,25×", …). */
     private void syncSpeedLabel() {
         String label = SPEED_LABELS[speedIndex(Prefs.playerSpeed(this))];
-        if (btnSpeed != null) btnSpeed.setText(label);
         if (btnSpeedP != null) btnSpeedP.setText(label);
     }
 
@@ -825,20 +770,10 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     /** Putar pilihan kecepatan 0,5x–2x (rel lanskap: tap = ganti berikutnya). */
-    private void cycleSpeed() {
-        int next = (speedIndex(Prefs.playerSpeed(this)) + 1) % SPEEDS.length;
-        Prefs.setPlayerSpeed(this, SPEEDS[next]);
-        if (player != null && exoStarted) player.setPlaybackSpeed(SPEEDS[next]);
-        syncSpeedLabel();
-    }
 
     /** Tombol server hanya ada bila episode punya >1 mirror. */
     private void updateServerButton() {
         boolean multi = mirrorList.size() > 1;
-        if (btnServer != null) {
-            btnServer.setVisibility(multi ? View.VISIBLE : View.GONE);
-            if (multi) btnServer.setText("S" + (mirrorIdx + 1));
-        }
         if (btnServerP != null) {
             btnServerP.setVisibility(multi ? View.VISIBLE : View.GONE);
             if (multi) btnServerP.setText(serverLabel(mirrorIdx));
@@ -966,19 +901,6 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     /** Daftar episode ala AL: pilih = pindah episode. */
-    private void showEpisodePicker() {
-        if (epUrls.isEmpty()) return;
-        String[] names = new String[epTitles.size()];
-        for (int i = 0; i < epTitles.size(); i++) {
-            String t = epTitles.get(i);
-            names[i] = (t == null || t.isEmpty()) ? ("Episode " + (i + 1)) : t;
-        }
-        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.episode_list)
-                .setItems(names, (d, which) -> gotoEpisode(which))
-                .setNegativeButton(R.string.cancel, null)
-                .show();
-    }
 
     /** Judul = nama anime; subjudul = episode. Info tampil di bilah atas. */
     private void syncTitle() {
@@ -997,17 +919,6 @@ public class PlayerActivity extends AppCompatActivity {
 
     /** Sembunyikan tombol prev/next bawaan kontrol Exo (tengah) — rel kanan
      *  sudah mewakilinya sehingga tidak dobel. */
-    private void hideDefaultPrevNext() {
-        if (playerView == null) return;
-        try {
-            View prev = playerView.findViewById(androidx.media3.ui.R.id.exo_prev);
-            View next = playerView.findViewById(androidx.media3.ui.R.id.exo_next);
-            if (prev != null) prev.setVisibility(View.GONE);
-            if (next != null) next.setVisibility(View.GONE);
-        } catch (Throwable ignored) {
-            // Id internal berubah di versi Media3 lain — bukan fatal.
-        }
-    }
 
     // ------------------------------------------------------------------ chrome
 
@@ -1079,7 +990,6 @@ public class PlayerActivity extends AppCompatActivity {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
         if (isInPictureInPictureMode) {
             if (topbar != null) topbar.setVisibility(View.GONE);
-            if (sideRail != null) sideRail.setVisibility(View.GONE);
             if (modeBadge != null) modeBadge.setVisibility(View.GONE);
             if (qualityBadge != null) qualityBadge.setVisibility(View.GONE);
             if (playerView != null) playerView.setUseController(false);

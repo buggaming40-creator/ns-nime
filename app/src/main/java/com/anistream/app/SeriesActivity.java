@@ -38,8 +38,8 @@ public class SeriesActivity extends AppCompatActivity {
     private RecyclerView recycler;
     private ProgressBar progress;
     private TextView empty, metaLine, synopsis, synToggle, epCount;
-    private LinearLayout genreRow, castRow;
-    private View synCard, castCard;
+    private LinearLayout genreRow;
+    private View synCard;
     private ImageButton btnSort, btnView;
     private HistoryStore store;
     private BookmarkStore bookmarks;
@@ -89,8 +89,6 @@ public class SeriesActivity extends AppCompatActivity {
         TextView tv = findViewById(R.id.title);
         metaLine = findViewById(R.id.metaLine);
         genreRow = findViewById(R.id.genreRow);
-        castRow = findViewById(R.id.castRow);
-        castCard = findViewById(R.id.castCard);
         synCard = findViewById(R.id.synCard);
         synopsis = findViewById(R.id.synopsis);
         synToggle = findViewById(R.id.synToggle);
@@ -178,7 +176,6 @@ public class SeriesActivity extends AppCompatActivity {
                 metaLine.setVisibility(metaOf(s).isEmpty() ? View.GONE : View.VISIBLE);
                 buildGenres(s.genres);
                 buildSynopsis(s.synopsis);
-                buildCasts(s.casts);
 
                 syncSeriesToBookmark(s);
                 syncBookmarkButton();
@@ -255,68 +252,6 @@ public class SeriesActivity extends AppCompatActivity {
                 back.putExtra(MainActivity.EXTRA_TAB, PagerAdapter.PAGE_SEARCH);
                 startActivity(back);
             });
-        }
-    }
-
-    /**
-     * Pengisi suara ala Animok: lingkaran inisial + nama (data teks situs,
-     * tanpa foto). Ketuk = cari nama tersebut (filmografi kasar).
-     */
-    private void buildCasts(List<String> casts) {
-        if (castRow == null || castCard == null) return;
-        castRow.removeAllViews();
-        if (casts == null || casts.isEmpty()) {
-            castCard.setVisibility(View.GONE);
-            return;
-        }
-        castCard.setVisibility(View.VISIBLE);
-        for (String name : casts) {
-            if (name == null || name.trim().isEmpty()) continue;
-            final String actor = name.trim();
-
-            LinearLayout col = new LinearLayout(this);
-            col.setOrientation(LinearLayout.VERTICAL);
-            col.setGravity(android.view.Gravity.CENTER_HORIZONTAL);
-            LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT);
-            clp.setMarginEnd(dp(12));
-            col.setLayoutParams(clp);
-
-            TextView avatar = new TextView(this);
-            String initial = actor.substring(0, 1).toUpperCase(java.util.Locale.US);
-            avatar.setText(initial);
-            avatar.setTextSize(20);
-            avatar.setTypeface(null, android.graphics.Typeface.BOLD);
-            avatar.setTextColor(getColor(R.color.text_primary));
-            avatar.setGravity(android.view.Gravity.CENTER);
-            avatar.setBackgroundResource(R.drawable.ui_bg_avatar);
-            int sz = dp(56);
-            LinearLayout.LayoutParams alp = new LinearLayout.LayoutParams(sz, sz);
-            avatar.setLayoutParams(alp);
-
-            TextView label = new TextView(this);
-            label.setText(actor);
-            label.setTextSize(11);
-            label.setTextColor(getColor(R.color.text_secondary));
-            label.setGravity(android.view.Gravity.CENTER);
-            label.setMaxLines(2);
-            label.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(
-                    dp(72), LinearLayout.LayoutParams.WRAP_CONTENT);
-            llp.topMargin = dp(6);
-            label.setLayoutParams(llp);
-
-            col.addView(avatar);
-            col.addView(label);
-            col.setOnClickListener(v -> {
-                SearchFragment.requestQuery(actor);
-                Intent back = new Intent(SeriesActivity.this, MainActivity.class);
-                back.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                back.putExtra(MainActivity.EXTRA_TAB, PagerAdapter.PAGE_SEARCH);
-                startActivity(back);
-            });
-            castRow.addView(col);
         }
     }
 
