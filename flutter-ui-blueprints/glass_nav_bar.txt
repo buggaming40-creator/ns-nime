@@ -1,0 +1,110 @@
+// blueprint: widgets/home/glass_nav_bar.dart
+[1] ValueListenableBuilder
+      ∙ Radius
+    · double 999
+      ∙ BorderRadius
+    · Color(0xFF282434)
+      ∙ BoxDecoration
+    · Color(0xFFE23B3B)
+[2] Text
+    · style TextStyle(fontSize: 9, color: ?)
+[3] Container
+    · EdgeInsets.symmetric(horizontal: 5, vertical: 1)
+[4] Container
+[5] Positioned
+[6] Stack
+[7] LayoutBuilder
+      ∙ Size
+    · double 0.65
+[8] AnimatedBuilder
+    · double 0.15
+      ∙ Offset
+    · Color(0xFFFFFFFF)
+[9] CustomPaint
+      ∙ CurvedAnimation
+      ∙ CurvedAnimation
+      ∙ AnimationController
+      ∙ AnimationController
+[10] AnimatedBuilder
+      ∙ Offset
+[11] Transform
+[12] Transform
+      ∙ Tween
+      ∙ CurveTween
+      ∙ TweenSequenceItem
+      ∙ Tween
+      ∙ CurveTween
+      ∙ TweenSequenceItem
+    · double 70
+      ∙ TweenSequence
+      ∙ TweenSequence
+      ∙ Tween
+      ∙ CurveTween
+      ∙ TweenSequenceItem
+      ∙ Tween
+      ∙ CurveTween
+      ∙ TweenSequenceItem
+    · double 70
+      ∙ TweenSequence
+      ∙ TweenSequence
+      ∙ AnimationController
+      ∙ AnimationController
+      ∙ EdgeInsets
+      ∙ Radius
+      ∙ BorderRadius
+    · Color(0xFF6C63FF)
+    · double 0.28
+      ∙ BoxShadow
+    · Color?
+    · double 0.45
+      ∙ BoxShadow
+      ∙ BoxDecoration
+      ∙ Radius
+      ∙ BorderRadius
+[13] ClipRRect
+[14] DecoratedBox
+[15] RepaintBoundary
+[16] Padding
+[17] SafeArea
+    · EdgeInsets?
+      ∙ Radius
+      ∙ BorderRadius
+      ∙ BoxDecoration
+[18] LayoutBuilder
+[19] Container
+    · EdgeInsets.symmetric(horizontal: 4, vertical: 0)
+[20] Container
+    · double 50
+      ∙ Radius
+      ∙ BorderRadius
+    · Color(0xFF6C63FF)
+    · double 0.45
+      ∙ BoxShadow
+      ∙ BoxDecoration
+[21] Container
+[22] Container
+[23] AnimatedPositioned
+[24] AnimatedSwitcher
+[25] Positioned
+      ∙ Widget
+[26] Row
+[27] Stack
+      ∙ Radius
+      ∙ BorderRadius
+    · Color(0xFFFFFFFF)
+    · double 0.15
+    · Color(0xFFFFFFFF)
+    · double 0.06
+    · Color(0xFFFFFFFF)
+    · Color(0xFFFFFFFF)
+    · double 0.7
+[28] Icon
+[29] Padding
+    · EdgeInsets.symmetric(horizontal: 12, vertical: 10)
+[30] InkWell
+[31] Center
+[32] SizedBox
+[33] GlassNavBar
+[34] UniqueKey
+
+// total widget: 34, events: 107

@@ -1,0 +1,93 @@
+// blueprint: widgets/home/continue_watching_section.dart
+[1] SizedBox(w: 0, h: 0)
+    · Color(0xFFFFFFFF)
+    · style FontWeight.w700
+[2] Text
+    · Color(0xFFFFFFFF)
+    · style FontWeight.w400
+[3] Text
+[4] Row
+[5] GestureDetector
+[6] GestureDetector
+[7] Row
+[8] Padding
+    · EdgeInsets.fromLTRB(15, 0, 15, 8)
+[9] ListView
+    · EdgeInsets.symmetric(horizontal: 11, vertical: 0)
+[10] SizedBox
+[11] Column
+[12] Padding
+    · EdgeInsets.symmetric(horizontal: 0, vertical: 14)
+    · Color(0xFFFFFFFF)
+    · double 0.06
+      ∙ Radius
+      ∙ BorderRadius
+      ∙ Radius
+      ∙ BorderRadius
+[13] AppImage
+    · Color?
+    · Color?
+[14] LinearGradient
+      ∙ BoxDecoration
+[15] DecoratedBox
+[16] IgnorePointer
+[17] Positioned
+    · Color?
+    · double 0.35
+      ∙ BoxDecoration
+[18] Container
+[19] Container
+[20] Center
+[21] Positioned
+    · Color?
+    · double 0.42
+      ∙ Radius
+      ∙ BorderRadius
+      ∙ BoxDecoration
+    · Color(0xFFFFFFFF)
+    · style FontWeight.w500
+[22] Text
+[23] Container
+    · EdgeInsets.symmetric(horizontal: 6, vertical: 2)
+[24] Container
+[25] Positioned
+    · Color(0xFFFFFFFF)
+    · style FontWeight.w500
+[26] Text
+[27] Positioned
+    · Color(0xFFFFFFFF)
+    · double 0.18
+[28] LinearProgressIndicator
+[29] Positioned
+[30] Stack
+[31] ClipRRect
+    · BorderRadius?
+    · Color(0xFFFFFFFF)
+    · style FontWeight.w500
+[32] Text
+[33] Padding
+    · EdgeInsets.fromLTRB(6, 6, 6, 5)
+[34] Column
+[35] InkWell
+[36] Material
+[37] Container
+    · EdgeInsets.symmetric(horizontal: 4, vertical: 0)
+[38] Container
+[39] ReturnAsyncNotFuture
+[40] Await
+[41] Await
+[42] ReturnAsyncNotFuture
+[43] ReturnAsyncNotFuture
+[44] Map
+[45] DefaultNullableTypeTest
+[46] ReturnAsyncNotFuture
+[47] String
+[48] WatchPage
+[49] Await
+[50] InitLateStaticField
+[51] ReturnAsyncNotFuture
+[52] ReturnAsyncNotFuture
+[53] ReThrow
+[54] SeriesPage
+
+// total widget: 54, events: 90

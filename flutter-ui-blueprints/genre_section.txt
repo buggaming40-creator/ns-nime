@@ -1,0 +1,108 @@
+// blueprint: widgets/home/genre_section.dart
+      ∙ Radius
+      ∙ BorderRadius
+      ∙ Radius
+      ∙ BorderRadius
+[1] LinearGradient
+    · double 0.28
+      ∙ BoxShadow
+      ∙ BoxDecoration
+      ∙ Radius
+      ∙ BorderRadius
+    · Color(0xFFFFFFFF)
+    · double 0.14
+      ∙ BoxDecoration
+[2] Container
+[3] Container
+[4] Positioned
+    · Color(0xFFFFFFFF)
+    · double 0.12
+[5] Icon
+[6] Positioned
+    · Color(0xFFFFFFFF)
+    · double 0.22
+      ∙ Radius
+      ∙ BorderRadius
+      ∙ BoxDecoration
+[7] Icon
+    · Color(0xFFFFFFFF)
+[8] Container
+[9] Container
+    · style FontWeight.w700
+    · Color(0xFFFFFFFF)
+[10] Text
+[11] FittedBox
+[12] Expanded
+[13] SizedBox(h: 6)
+[14] Row
+[15] Padding
+    · EdgeInsets.symmetric(horizontal: 8, vertical: 0)
+[16] Stack
+[17] ClipRRect
+[18] Ink
+[19] Ink
+[20] InkWell
+[21] Material
+    · Color?
+[22] SizedBox(w: 0, h: 0)
+    · style FontWeight.w700
+    · Color(0xFFFFFFFF)
+[23] Text
+    · Color(0xFFFFFFFF)
+    · double 0.55
+[24] Text
+[25] Column
+[26] Expanded
+    · Color(0xFFFFFFFF)
+    · double 0.06
+      ∙ Radius
+    · double 999
+      ∙ BorderRadius
+      ∙ Radius
+    · double 999
+      ∙ BorderRadius
+    · style FontWeight.w600
+    · Color(0xFFFFFFFF)
+[27] Text
+[28] SizedBox(h: 2)
+[29] Row
+[30] Padding
+    · EdgeInsets.symmetric(horizontal: 10, vertical: 5)
+[31] InkWell
+[32] Material
+[33] Row
+[34] Padding
+    · EdgeInsets.fromLTRB(15, 0, 15, 10)
+[35] GridView
+    · EdgeInsets.symmetric(horizontal: 15, vertical: 0)
+[36] SizedBox
+[37] Column
+[38] MaterialPageRoute
+[39] MaterialPageRoute
+[40] GenrePage
+    · Color(0xFF1C1A25)
+[41] DraggableScrollableSheet
+    · double 0.6
+    · double 0.9
+    · Color(0xFFFFFFFF)
+      ∙ Radius
+    · double 999
+      ∙ BorderRadius
+      ∙ BoxDecoration
+[42] Container
+[43] Container
+    · style FontWeight.w700
+    · Color(0xFFFFFFFF)
+[44] Text
+    · Color(0xFFFFFFFF)
+[45] Text
+[46] Row
+[47] Padding
+    · EdgeInsets.fromLTRB(20, 14, 20, 6)
+[48] GridView
+    · EdgeInsets.fromLTRB(16, 6, 16, 24)
+[49] Expanded
+[50] SizedBox(h: 10)
+[51] Column
+
+// total widget: 51, events: 105

@@ -1,0 +1,103 @@
+// blueprint: widgets/series/chapter_card.dart
+    · Color(0xFF6969F4)
+    · double 0.16
+    · Color(0xFFFFFFFF)
+    · double 0.07
+      ∙ Radius
+      ∙ BorderRadius
+      ∙ Radius
+      ∙ BorderRadius
+      ∙ BoxDecoration
+[1] Positioned
+    · Color(0xFFFFFFFF)
+    · style FontWeight.w500
+[2] Text
+    · Color(0xFF6969F4)
+    · style FontWeight.w500
+[3] Text
+[4] SizedBox(h: 2)
+[5] Column
+[6] Stack
+[7] Container
+    · EdgeInsets.symmetric(horizontal: 6, vertical: 0)
+[8] Container
+[9] InkWell
+    · Color(0x3DFFFFFF) // a=24%
+[10] Material
+    · Color?
+    · double 100
+      ∙ Radius
+      ∙ BorderRadius
+    · Color(0xFFFFFFFF)
+    · double 0.05
+      ∙ Radius
+      ∙ BorderRadius
+[11] AppImage
+    · Color?
+    · double 0.3
+[12] Container
+[13] Container
+[14] Positioned
+    · Color(0xFFFFFFFF)
+    · style FontWeight.w700
+[15] Text
+[16] Center
+[17] Positioned
+    · Color(0xFFFFFFFF)
+    · double 0.22
+[18] LinearProgressIndicator
+[19] SizedBox
+[20] Positioned
+[21] Positioned
+[22] Stack
+[23] ClipRRect
+[24] Hero
+[25] SizedBox(h: 10)
+    · Color(0xFFFFFFFF)
+    · style FontWeight.w500
+[26] Text
+[27] Flexible
+    · Color(0x8AFFFFFF) // a=54%
+[28] Text
+[29] SizedBox(h: 8)
+[30] SizedBox(h: 4)
+[31] Row
+    · Color(0xFF6969F4)
+    · Color(0x8AFFFFFF) // a=54%
+    · style FontWeight.w400
+[32] Text
+[33] SizedBox(h: 4)
+[34] Column
+[35] Expanded
+[36] Row
+[37] Container
+    · EdgeInsets.all(6)
+[38] Container
+[39] InkWell
+    · Color?
+    · Color(0x3DFFFFFF) // a=24%
+[40] Material
+[41] ClipRRect
+[42] Padding
+    · EdgeInsets.symmetric(horizontal: 0, vertical: 4)
+[43] DateTime
+[44] DateTime
+    · Color?
+    · double 0.62
+      ∙ Radius
+    · double 999
+      ∙ BorderRadius
+    · Color(0xFFFFFFFF)
+    · double 0.14
+      ∙ BoxDecoration
+[45] Icon
+    · Color(0xFFFFFFFF)
+[46] Image
+[47] SizedBox(h: 3)
+[48] Row
+[49] Container
+    · EdgeInsets.fromLTRB(5, 3, 6, 3)
+[50] Container
+[51] StackOverflowSharedWithFPURegs
+
+// total widget: 51, events: 100

@@ -1,0 +1,111 @@
+// blueprint: widgets/home/headers.dart
+[1] ValueListenableBuilder
+    · Color(0xFFFFFFFF)
+    · double 0.65
+    · style FontWeight.w400
+[2] Text
+    · Color(0xFFFFFFFF)
+    · style FontWeight.w600
+[3] Text
+[4] Flexible
+    · Color(0xFF3DA3F7)
+    · double 0.55
+      ∙ BoxShadow
+    · double 0.4
+      ∙ BoxDecoration
+[5] Container
+    · EdgeInsets.symmetric(horizontal: 5, vertical: 0)
+[6] Container
+[7] Row
+[8] SizedBox(h: 6)
+      ∙ Radius
+    · double 999
+      ∙ BorderRadius
+      ∙ BoxDecoration
+    · Color(0xFF6969F4)
+    · style FontWeight.w700
+[9] Text
+[10] Container
+    · EdgeInsets.symmetric(horizontal: 6, vertical: 2)
+[11] Container
+[12] SizedBox(h: 5)
+    · Color(0xFFFFFFFF)
+    · double 0.07
+      ∙ Radius
+    · double 999
+      ∙ BorderRadius
+      ∙ BoxDecoration
+    · Color(0xFFFFFFFF)
+    · double 0.92
+    · style FontWeight.w500
+[13] Text
+[14] Container
+    · EdgeInsets.symmetric(horizontal: 6, vertical: 2)
+[15] Container
+[16] Row
+[17] GestureDetector
+[18] GestureDetector
+[19] SizedBox(h: 2)
+[20] SizedBox(h: 4)
+[21] Column
+[22] Expanded
+      ∙ Radius
+      ∙ BorderRadius
+      ∙ Radius
+      ∙ BorderRadius
+    · Color(0xFFFFFFFF)
+    · double 0.08
+      ∙ BoxDecoration
+[23] Container
+    · EdgeInsets.all(8)
+[24] Container
+[25] InkWell
+    · double 0.6
+      ∙ BoxShadow
+      ∙ BoxDecoration
+[26] Container
+[27] Container
+[28] Positioned
+[29] Stack
+      ∙ Radius
+      ∙ BorderRadius
+      ∙ Radius
+      ∙ BorderRadius
+    · Color(0xFFFFFFFF)
+    · double 0.08
+      ∙ BoxDecoration
+[30] Container
+    · EdgeInsets.all(10)
+[31] Container
+[32] InkWell
+[33] SizedBox(h: 8)
+[34] SizedBox(h: 8)
+[35] SizedBox(h: 8)
+[36] Row
+[37] Container
+    · EdgeInsets.symmetric(horizontal: 16, vertical: 12)
+[38] Container
+[39] AppImage
+[40] ClipOval
+[41] SizedBox
+[42] RankAvatarFrame
+    · double 44
+[43] Center
+[44] SizedBox
+[45] Container
+    · EdgeInsets.all(2.2)
+[46] Container
+[47] AnimatedGradientBorder
+    · BorderRadius?
+    · double 2.2
+    · Color(0xFF8C5AFF)
+    · double 0.35
+      ∙ BoxShadow
+      ∙ BoxDecoration
+[48] AppImage
+[49] ClipOval
+[50] Container
+    · EdgeInsets.all(2.2)
+[51] Container
+
+// total widget: 51, events: 108

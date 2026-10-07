@@ -1,0 +1,303 @@
+// blueprint: pages/series/watch_page.dart
+    · double 1.7
+    · double 1.7
+[1] WatchErrorContent
+[2] WatchErrorContent
+[3] Center
+[4] Scaffold
+    · Color(0xFF14121A)
+    · Color(0xFF14121A)
+[5] CounterOverlay
+[6] SizedBox
+[7] WatchLoadingScaffold
+    · double 1.7
+    · Color(0xFF23202D)
+    · Color(0xFF14121A)
+[8] CounterOverlay
+[9] TicketCounter
+[10] Stack
+[11] SafeArea
+    · EdgeInsets?
+[12] Scaffold
+    · Color(0xFF14121A)
+[13] WillPopScope
+[14] AnimatedSwitcher
+[15] LateInitializationErrorSharedWithoutFPURegs
+[16] LateInitializationErrorSharedWithoutFPURegs
+[17] LateInitializationErrorSharedWithoutFPURegs
+[18] RepaintBoundary
+[19] AnimatedBuilder
+    · double 520
+    · double 0.22
+    · double 0.35
+    · double 0.55
+      ∙ Radius
+      ∙ BorderRadius
+[20] ClipRRect
+[21] Transform
+[22] Opacity
+[23] StackOverflowSharedWithFPURegs
+[24] SizedBox(w: 0, h: 0)
+[25] AnimatedBuilder
+[26] LateInitializationErrorSharedWithoutFPURegs
+[27] AspectRatio
+[28] SizedBox(w: 0, h: 0)
+[29] Container
+    · Color(0xFF14121A)
+    · EdgeInsets.symmetric(horizontal: 15, vertical: 20)
+[30] Container
+[31] Expanded
+[32] Column
+[33] Opacity
+[34] LateInitializationErrorSharedWithoutFPURegs
+[35] GestureDetector
+[36] GestureDetector
+    · Color(0xFFFFFFFF)
+    · style FontWeight.w700
+[37] Text
+[38] SizedBox(h: 10)
+[39] Row
+[40] SizedBox(h: 20)
+    · Color(0xFFFFFFFF)
+[41] Padding
+    · EdgeInsets.all(18)
+[42] SizedBox(h: 15)
+[43] ValueKey
+[44] Komentar
+[45] AppearIn
+    · Color(0xFF9495FF)
+[46] ListView
+[47] ListView
+[48] LateInitializationErrorSharedWithoutFPURegs
+[49] MentionSuggestionStrip
+[50] KomentarInputField
+[51] Column
+[52] ReturnAsyncNotFuture
+[53] ReturnAsyncNotFuture
+[54] Await
+[55] ReturnAsyncNotFuture
+[56] ReturnAsyncNotFuture
+[57] ReturnAsyncNotFuture
+[58] ReturnAsyncNotFuture
+[59] ReturnAsyncNotFuture
+[60] Await
+[61] ReturnAsyncNotFuture
+[62] Await
+[63] InitLateStaticField
+[64] ReturnAsyncNotFuture
+[65] ReturnAsyncNotFuture
+[66] ReturnAsyncNotFuture
+[67] ReThrow
+[68] LateInitializationErrorSharedWithoutFPURegs
+[69] LateInitializationErrorSharedWithoutFPURegs
+[70] VipDialog
+[71] String
+[72] String
+[73] String
+[74] String
+[75] String
+[76] DefaultNullableTypeTest
+[77] DefaultNullableTypeTest
+[78] DefaultNullableTypeTest
+[79] DefaultNullableTypeTest
+[80] Komentar
+[81] ReturnAsyncNotFuture
+[82] ReturnAsyncNotFuture
+[83] Await
+[84] ReturnAsyncNotFuture
+[85] Await
+[86] Await
+[87] ReturnAsyncNotFuture
+[88] Await
+[89] Await
+[90] ReturnAsyncNotFuture
+[91] ReturnAsyncNotFuture
+      ∙ Radius
+      ∙ BorderRadius
+[92] RoundedRectangleBorder
+    · Color(0xFFFFFFFF)
+    · style FontWeight.w700
+[93] Text
+    · Color(0xB3FFFFFF) // a=70%
+[94] Text
+    · Color(0x8AFFFFFF) // a=54%
+[95] Text
+[96] TextButton
+    · Color(0xFF9495FF)
+    · style FontWeight.w600
+[97] Text
+[98] TextButton
+[99] AlertDialog
+    · Color(0xFF1B1824)
+[100] LateInitializationErrorSharedWithoutFPURegs
+[101] LateInitializationErrorSharedWithoutFPURegs
+[102] ReturnAsyncNotFuture
+[103] ReturnAsyncNotFuture
+[104] WatchEpisodeSnapshot
+[105] MiniPlayerSession
+[106] LateInitializationErrorSharedWithoutFPURegs
+[107] LateInitializationErrorSharedWithoutFPURegs
+[108] LateInitializationErrorSharedWithoutFPURegs
+[109] LateInitializationErrorSharedWithoutFPURegs
+[110] LateInitializationErrorSharedWithoutFPURegs
+[111] LateInitializationErrorSharedWithoutFPURegs
+[112] LateInitializationErrorSharedWithoutFPURegs
+[113] LateInitializationErrorSharedWithoutFPURegs
+[114] LateInitializationErrorSharedWithoutFPURegs
+[115] WatchVideoPlayerSkeleton
+[116] KeyedSubtree
+[117] KeyedSubtree
+[118] AnimatedSwitcher
+[119] AspectRatio
+[120] SizedBox
+[121] GestureDetector
+[122] GestureDetector
+[123] StackOverflowSharedWithFPURegs
+[124] Stack
+    · double 120
+    · double 900
+[125] StackOverflowSharedWithFPURegs
+      ∙ AnimationController
+      ∙ AnimationController
+      ∙ CurvedAnimation
+      ∙ CurvedAnimation
+[126] StackOverflowSharedWithFPURegs
+[127] AspectRatio
+[128] SizedBox(w: 0, h: 0)
+[129] SliverToBoxAdapter
+    · Color(0xFFFFFFFF)
+    · style FontWeight.w700
+[130] Text
+[131] Material
+[132] Hero
+    · Color(0xFFFFFFFF)
+    · style FontWeight.w400
+[133] Text
+[134] Expanded
+[135] Row
+[136] AppearIn
+[137] WatchTopControls
+[138] AppearIn
+[139] AppearIn
+[140] SizedBox(h: 5)
+[141] SizedBox(h: 4)
+[142] SizedBox(h: 8)
+[143] SizedBox(h: 10)
+[144] ChatTickerLoader
+    · EdgeInsets.symmetric(horizontal: 6, vertical: 0)
+    · double 34
+[145] RepaintBoundary
+[146] SizedBox(h: 6)
+[147] AdWidget
+[148] Container
+[149] Container
+[150] Center
+[151] SizedBox(h: 12)
+    · Color(0xFFFFFFFF)
+    · style FontWeight.w700
+[152] Text
+[153] AppearIn
+[154] SizedBox(h: 12)
+[155] AppearIn
+[156] SizedBox(h: 0)
+[157] Column
+[158] SliverToBoxAdapter
+[159] SliverPadding
+    · EdgeInsets.all(15)
+[160] SliverChildBuilderDelegate
+[161] SliverList
+[162] SliverPadding
+    · EdgeInsets.symmetric(horizontal: 15, vertical: 0)
+[163] CustomScrollView
+[164] NotificationListener
+[165] StackOverflowSharedWithFPURegs
+[166] LateInitializationErrorSharedWithFPURegs
+[167] LateInitializationErrorSharedWithFPURegs
+[168] LateInitializationErrorSharedWithFPURegs
+[169] LateInitializationErrorSharedWithoutFPURegs
+[170] LateInitializationErrorSharedWithoutFPURegs
+[171] MentionSuggestionStrip
+[172] KomentarInputField
+[173] Column
+      ∙ Radius
+      ∙ BorderRadius
+[174] String
+[175] AppImage
+[176] SizedBox
+[177] ClipRRect
+[178] Padding
+    · EdgeInsets.symmetric(horizontal: 6, vertical: 8)
+[179] GestureDetector
+[180] GestureDetector
+[181] String
+[182] WatchEpisodeList
+[183] Expanded
+[184] SizedBox(h: 7)
+[185] Row
+    · Color(0xFFFFFFFF)
+    · double 0.08
+      ∙ Radius
+      ∙ BorderRadius
+      ∙ BoxDecoration
+    · Color(0xFFFFFFFF)
+    · style FontWeight.w400
+[186] Text
+[187] Row
+[188] Container
+    · EdgeInsets.symmetric(horizontal: 11, vertical: 0)
+[189] Container
+[190] GestureDetector
+[191] GestureDetector
+[192] LateInitializationErrorSharedWithoutFPURegs
+    · Color(0xFFFFFFFF)
+    · style FontWeight.w600
+[193] Text
+[194] InkWell
+[195] Row
+[196] Padding
+    · EdgeInsets.symmetric(horizontal: 0, vertical: 12)
+[197] ListView
+[198] SizedBox(h: 10)
+[199] Column
+[200] ConstrainedBox
+[201] GlassContainer
+    · EdgeInsets.fromLTRB(14, 14, 14, 12)
+    · double 0.14
+[202] Dialog
+    · Color?
+    · EdgeInsets.symmetric(horizontal: 22, vertical: 0)
+      ∙ Radius
+      ∙ BorderRadius
+    · double 0.06
+    · double 0.03
+    · Color(0xFFFFFFFF)
+      ∙ Radius
+      ∙ BorderRadius
+    · double 0.1
+    · double 0.05
+    · Color(0xFFFFFFFF)
+      ∙ BoxDecoration
+    · Color(0xFFFFFFFF)
+    · Color(0x62FFFFFF) // a=38%
+    · style FontWeight.w600
+[203] Text
+    · Color(0xB3FFFFFF) // a=70%
+    · Color(0x62FFFFFF) // a=38%
+    · style FontWeight.w400
+[204] Text
+    · Color(0xB3FFFFFF) // a=70%
+    · Color(0x3DFFFFFF) // a=24%
+[205] Icon
+[206] SizedBox(h: 8)
+[207] Row
+[208] Container
+    · EdgeInsets.all(12)
+[209] Container
+[210] InkWell
+[211] LateInitializationErrorSharedWithoutFPURegs
+[212] LateInitializationErrorSharedWithoutFPURegs
+[213] Await
+[214] ReturnAsyncNotFuture
+[215] ReturnAsyncNotFuture
+
+// total widget: 215, events: 410
