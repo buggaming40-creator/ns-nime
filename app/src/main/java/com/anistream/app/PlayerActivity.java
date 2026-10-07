@@ -724,7 +724,8 @@ public class PlayerActivity extends AppCompatActivity {
         updateRail();
     }
 
-    /** Tinggi status bar + poni presisi (poni diukur, bukan tebakan). */
+    /** Tinggi status bar + poni presisi (poni diukur, bukan tebakan),
+     * plus napas agar video/ketukan tak mepet lingkaran kamera. */
     private int topInset() {
         int sb = statusBarHeight();
         int cut = 0;
@@ -737,7 +738,7 @@ public class PlayerActivity extends AppCompatActivity {
             }
         } catch (Throwable ignored) {
         }
-        return Math.max(sb, cut) + dp(4);
+        return Math.max(sb, cut) + dp(12);
     }
 
     /** Tinggi status bar (tetap ada walau disembunyikan imersif). */
