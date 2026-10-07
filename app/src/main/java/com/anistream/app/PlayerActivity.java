@@ -723,7 +723,7 @@ public class PlayerActivity extends AppCompatActivity {
      */
     private void watchTopInset() {
         if (videoBox == null) return;
-        portraitTopPx = statusBarHeight() + dp(8);
+        portraitTopPx = statusBarHeight() + dp(2);
         androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(
                 videoBox, (v, insets) -> {
                     int cut = 0, sb = 0;
@@ -736,7 +736,7 @@ public class PlayerActivity extends AppCompatActivity {
                                         .statusBars()).top;
                     } catch (Throwable ignored) {
                     }
-                    int want = Math.max(sb, cut) + dp(8);
+                    int want = Math.max(sb, cut) + dp(2);
                     if (want != portraitTopPx) {
                         portraitTopPx = want;
                         if (!isLandscape()) applyVideoBoxLp();
@@ -748,7 +748,7 @@ public class PlayerActivity extends AppCompatActivity {
 
     /** Nilai ruang atas saat ini (fallback bila listener belum jalan). */
     private int portraitTop() {
-        return portraitTopPx < 0 ? statusBarHeight() + dp(8) : portraitTopPx;
+        return portraitTopPx < 0 ? statusBarHeight() + dp(2) : portraitTopPx;
     }
 
     /** Terapkan ukuran videoBox sesuai orientasi (dipakai ulang listener). */
@@ -764,7 +764,16 @@ public class PlayerActivity extends AppCompatActivity {
             lp.height = android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
         }
         videoBox.setLayoutParams(lp);
-        // Strip atas sewarna background (bukan hitam) + video tetap hitam.
+        // Strip atas + root sewarna window_bg (nyatu sama bawah), video tetap hitam.
+        if (lp instanceof android.widget.LinearLayout.LayoutParams) {
+            ((android.widget.LinearLayout.LayoutParams) lp).topMargin = 0;
+            videoBox.setLayoutParams(lp);
+        }
+        View rootFrame = findViewById(R.id.rootFrame);
+        if (rootFrame != null) {
+            rootFrame.setBackgroundColor(landscape ? 0xFF000000
+                    : getResources().getColor(R.color.window_bg, getTheme()));
+        }
         View contentRoot = findViewById(R.id.contentRoot);
         if (contentRoot != null) {
             contentRoot.setPadding(0, landscape ? 0 : portraitTop(), 0, 0);
