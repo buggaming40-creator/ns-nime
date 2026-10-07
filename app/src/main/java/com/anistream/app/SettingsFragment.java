@@ -71,8 +71,8 @@ public class SettingsFragment extends Fragment {
     private RadioButton radioDark, radioLight, radioSystem;
     private LinearLayout accentRow;
 
-    // Preferensi player (urutan chip = nilai Prefs.QUALITY_* / Prefs.RATIO_*).
-    private Chip[] qualityChips, ratioChips;
+    // Preferensi player (urutan chip = nilai Prefs.RATIO_*).
+    private Chip[] ratioChips;
     private MaterialSwitch autoplaySwitch, pipSwitch;
 
     @Nullable @Override
@@ -116,20 +116,6 @@ public class SettingsFragment extends Fragment {
         btnClear.setOnClickListener(x -> confirmClear());
 
         // ---- player ----
-        qualityChips = new Chip[]{
-                v.findViewById(R.id.uiQuality360), v.findViewById(R.id.uiQuality480),
-                v.findViewById(R.id.uiQuality720), v.findViewById(R.id.uiQuality1080)};
-        final int[] qualityValues = {
-                Prefs.QUALITY_360, Prefs.QUALITY_480, Prefs.QUALITY_720, Prefs.QUALITY_1080};
-        for (int i = 0; i < qualityChips.length; i++) {
-            final int quality = qualityValues[i];
-            qualityChips[i].setOnClickListener(x -> {
-                if (!isAdded()) return;
-                Prefs.setPlayerQuality(requireContext(), quality);
-                syncPlayerUi();
-            });
-        }
-
         ratioChips = new Chip[]{
                 v.findViewById(R.id.uiRatioFit), v.findViewById(R.id.uiRatioFill),
                 v.findViewById(R.id.uiRatioZoom)};
@@ -341,13 +327,9 @@ public class SettingsFragment extends Fragment {
 
     // --------------------------------------------------------------- player
 
-    /** Sinkronkan chip kualitas/aspect ratio dan sakelar autoplay ke Prefs. */
+    /** Sinkronkan chip aspect ratio dan sakelar autoplay ke Prefs. */
     private void syncPlayerUi() {
-        if (!isAdded() || qualityChips == null) return;
-        int quality = Prefs.playerQuality(requireContext());
-        for (int i = 0; i < qualityChips.length; i++) {
-            if (qualityChips[i] != null) qualityChips[i].setChecked(i == quality);
-        }
+        if (!isAdded() || ratioChips == null) return;
         int ratio = Prefs.playerRatio(requireContext());
         for (int i = 0; i < ratioChips.length; i++) {
             if (ratioChips[i] != null) ratioChips[i].setChecked(i == ratio);

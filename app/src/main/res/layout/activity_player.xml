@@ -107,6 +107,34 @@
                         android:textSize="12sp" />
                 </LinearLayout>
             </LinearLayout>
+
+            <!-- Tombol fullscreen di atas video (ala YouTube, ikut kontrol) -->
+            <ImageButton
+                android:id="@+id/btnFsOverlay"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/fullscreen"
+                android:padding="12dp"
+                android:src="@drawable/ic_fullscreen"
+                android:visibility="gone"
+                app:tint="#FFFFFF" />
+
+            <!-- Kilatan info skip double-tap ("−10 detik" / "+10 detik") -->
+            <TextView
+                android:id="@+id/skipFlash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="#99000000"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="8dp"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
         </androidx.media3.ui.AspectRatioFrameLayout>
 
         <!-- Info + aksi + daftar episode (hanya potret) -->
@@ -186,22 +214,7 @@
                             android:textSize="13sp"
                             android:textStyle="bold"
                             app:cornerRadius="20dp"
-                            android:visibility="gone" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnQualityP"
-                            style="@style/Widget.Material3.Button.TonalButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="40dp"
-                            android:layout_marginStart="8dp"
-                            android:minWidth="0dp"
-                            android:text="720p"
-                            android:textAllCaps="false"
-                            android:textSize="13sp"
-                            android:textStyle="bold"
-                            app:cornerRadius="20dp" />
-
-                        <com.google.android.material.button.MaterialButton
+                            android:visibility="gone" /><com.google.android.material.button.MaterialButton
                             android:id="@+id/btnDownloadP"
                             style="@style/Widget.Material3.Button.TonalButton"
                             android:layout_width="wrap_content"
@@ -217,15 +230,6 @@
                             app:iconGravity="textStart"
                             app:iconSize="16dp" />
 
-                        <ImageButton
-                            android:id="@+id/btnFsP"
-                            android:layout_width="44dp"
-                            android:layout_height="44dp"
-                            android:layout_marginStart="8dp"
-                            android:background="@drawable/ui_bg_icon_button"
-                            android:contentDescription="@string/fullscreen"
-                            android:src="@drawable/ic_fullscreen"
-                            app:tint="?attr/colorPrimary" />
                     </LinearLayout>
                 </HorizontalScrollView>
 
@@ -265,17 +269,4 @@
         android:textSize="11sp"
         android:visibility="gone" />
 
-    <!-- Label preferensi kualitas (jujur: dipilih di Setelan, bukan transcode ulang) -->
-    <TextView
-        android:id="@+id/uiQualityBadge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="10dp"
-        android:background="#99000000"
-        android:paddingHorizontal="8dp"
-        android:paddingVertical="3dp"
-        android:textColor="#FFFFFF"
-        android:textSize="11sp"
-        android:visibility="gone" />
-</FrameLayout>
+    <!-- Label preferensi kualitas (jujur: dipilih di Setelan, bukan transcode ulang) --></FrameLayout>

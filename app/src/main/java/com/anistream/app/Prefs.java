@@ -91,18 +91,11 @@ public final class Prefs {
 
     // ----------------------------------------------------- preferensi player
 
-    /** Kualitas video pilihan (label preferensi; kualitas akhir dari sumber). */
-    public static final int QUALITY_360 = 0;
-    public static final int QUALITY_480 = 1;
-    public static final int QUALITY_720 = 2;   // bawaan
-    public static final int QUALITY_1080 = 3;
-
     /** Aspect ratio pemutar → RESIZE_MODE_FIT / FILL / ZOOM. */
     public static final int RATIO_FIT = 0;     // bawaan
     public static final int RATIO_FILL = 1;
     public static final int RATIO_ZOOM = 2;
 
-    private static final String KEY_PLAYER_QUALITY = "player_quality";
     private static final String KEY_PLAYER_AUTOPLAY = "player_autoplay";
     private static final String KEY_PLAYER_RATIO = "player_ratio";
     private static final String KEY_PLAYER_SPEED = "player_speed";
@@ -121,17 +114,6 @@ public final class Prefs {
     public static void setPlayerSpeed(Context c, float speed) {
         float s = Math.max(0.5f, Math.min(2f, speed));
         sp(c).edit().putFloat(KEY_PLAYER_SPEED, s).apply();
-    }
-
-    /** Kualitas tersimpan; 720p bila belum pernah diubah. */
-    public static int playerQuality(Context c) {
-        int q = sp(c).getInt(KEY_PLAYER_QUALITY, QUALITY_720);
-        return (q < QUALITY_360 || q > QUALITY_1080) ? QUALITY_720 : q;
-    }
-
-    public static void setPlayerQuality(Context c, int quality) {
-        if (quality < QUALITY_360 || quality > QUALITY_1080) return;
-        sp(c).edit().putInt(KEY_PLAYER_QUALITY, quality).apply();
     }
 
     /** Autoplay episode berikutnya; menyala secara bawaan. */
