@@ -12,6 +12,6 @@ public class AniApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Prefs.applyThemeMode(Prefs.themeMode(this));
+        Prefs.applyThemeMode(Prefs.THEME_SYSTEM);
     }
 }

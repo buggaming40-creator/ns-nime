@@ -12,8 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -29,15 +27,11 @@ import java.io.File;
 import java.util.Locale;
 
 /**
- * Tab "Setelan": tema aplikasi, warna aksen, preferensi player (kualitas,
- * autoplay, aspect ratio), penyimpanan (cache, riwayat pencarian, statistik),
- * informasi aplikasi, changelog, disclaimer, dan pengelolaan data riwayat.
+ * Tab "Setelan": warna aksen, preferensi player (autoplay, aspect ratio),
+ * penyimpanan (cache, riwayat pencarian, statistik), informasi aplikasi,
+ * changelog, disclaimer, dan pengelolaan data riwayat.
  *
- * Status tema tidak memakai OnCheckedChangeListener karena listener itu juga
- * terpicu oleh pemulihan state bawaan view (restore) sehingga bisa mengganti
- * tema tanpa disengaja. Yang dipakai: klik langsung + disinkronkan ulang lewat
- * {@link #syncThemeUi()}. Pola serupa dipakai untuk chip player
- * ({@link #syncPlayerUi()}).
+ * Tema mengikuti HP (gelap/terang sistem) — tidak ada pilihan tema manual.
  *
  * Pilihan aksen disimpan di {@link Prefs} lalu Activity dibuat ulang sehingga
  * overlay warna baru terbaca oleh seluruh layar.
@@ -67,8 +61,6 @@ public class SettingsFragment extends Fragment {
     private HistoryStore store;
     private BookmarkStore bookmarks;
     private TextView historyCount, storageStatus;
-    private RadioGroup themeGroup;
-    private RadioButton radioDark, radioLight, radioSystem;
     private LinearLayout accentRow;
 
     // Preferensi player (urutan chip = nilai Prefs.RATIO_*).
@@ -89,16 +81,6 @@ public class SettingsFragment extends Fragment {
         TextView version = v.findViewById(R.id.versionLabel);
         version.setText(getString(R.string.version_fmt, installedVersion()));
 
-        // ---- tema ----
-        themeGroup = v.findViewById(R.id.themeGroup);
-        radioDark = v.findViewById(R.id.radioDark);
-        radioLight = v.findViewById(R.id.radioLight);
-        radioSystem = v.findViewById(R.id.radioSystem);
-
-        View.OnClickListener pick = x -> onThemePicked(x.getId());
-        radioDark.setOnClickListener(pick);
-        radioLight.setOnClickListener(pick);
-        radioSystem.setOnClickListener(pick);
 
         // ---- aksen ----
         accentRow = v.findViewById(R.id.accentRow);
@@ -158,61 +140,14 @@ public class SettingsFragment extends Fragment {
     }
 
     @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        // Kunci ulang pilihan tema ke nilai tersimpan; state yang dipulihkan
-        // bawaan view tidak boleh mengubah preferensi.
-        syncThemeUi();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-        syncThemeUi();
         buildSwatches();
         updateCount();
         syncPlayerUi();
         updateStorage();
     }
 
-    private void onThemePicked(int viewId) {
-        if (!isAdded()) return;
-        int next = viewId == R.id.radioLight ? Prefs.THEME_LIGHT
-                : viewId == R.id.radioSystem ? Prefs.THEME_SYSTEM
-                : Prefs.THEME_DARK;
-
-        syncThemeUi();
-        if (next == Prefs.themeMode(requireContext())) return;
-
-        // Memicu recreate Activity — warna berubah untuk seluruh aplikasi.
-        Prefs.setThemeMode(requireContext(), next);
-    }
-
-    /** Setel status ketiga radio sesuai preferensi tersimpan (tanpa menulis). */
-    private void syncThemeUi() {
-        if (radioDark == null || !isAdded()) return;
-        int mode = Prefs.themeMode(requireContext());
-        int checked = mode == Prefs.THEME_LIGHT ? R.id.radioLight
-                : mode == Prefs.THEME_SYSTEM ? R.id.radioSystem
-                : R.id.radioDark;
-
-        // Satu jalur: biarkan RadioGroup yang mencentang anaknya setelah layout
-        // menempel, lalu paksa drawable ke status akhir. SetChecked manual per
-        // tombol + check() grup terbukti membuat titik radio tidak tergambar
-        // (cincin terwarnai tapi kosong) pada sebagian perangkat.
-        final int want = checked;
-        themeGroup.post(() -> {
-            themeGroup.check(want);
-            themeGroup.jumpDrawablesToCurrentState();
-        });
-
-        // Teks pilihan terpilih ikut warna aksen; sisanya warna teks biasa.
-        int active = attrColor(ATTR_COLOR_PRIMARY, R.color.primary);
-        int idle = ContextCompat.getColor(requireContext(), R.color.text_primary);
-        radioDark.setTextColor(checked == R.id.radioDark ? active : idle);
-        radioLight.setTextColor(checked == R.id.radioLight ? active : idle);
-        radioSystem.setTextColor(checked == R.id.radioSystem ? active : idle);
-    }
 
     // ---------------------------------------------------------------- aksen
 

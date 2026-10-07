@@ -717,11 +717,27 @@ public class PlayerActivity extends AppCompatActivity {
             // Potret: beri ruang kamera depan (poni) agar video tidak tertutup.
             if (lp instanceof android.widget.LinearLayout.LayoutParams) {
                 ((android.widget.LinearLayout.LayoutParams) lp).topMargin =
-                        landscape ? 0 : statusBarHeight();
+                        landscape ? 0 : topInset();
             }
             videoBox.setLayoutParams(lp);
         }
         updateRail();
+    }
+
+    /** Tinggi status bar + poni presisi (poni diukur, bukan tebakan). */
+    private int topInset() {
+        int sb = statusBarHeight();
+        int cut = 0;
+        try {
+            if (android.os.Build.VERSION.SDK_INT >= 30) {
+                android.view.WindowInsets wi = getWindowManager()
+                        .getCurrentWindowMetrics().getWindowInsets();
+                android.view.DisplayCutout dc = wi.getDisplayCutout();
+                if (dc != null) cut = dc.getSafeInsetTop();
+            }
+        } catch (Throwable ignored) {
+        }
+        return Math.max(sb, cut) + dp(4);
     }
 
     /** Tinggi status bar (tetap ada walau disembunyikan imersif). */
