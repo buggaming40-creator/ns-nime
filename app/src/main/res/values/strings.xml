@@ -112,6 +112,8 @@
     <string name="clear_bookmark">Hapus semua bookmark</string>
     <string name="clear_bookmark_msg">Hapus seluruh judul tersimpan dari perangkat ini?</string>
     <string name="bookmark_add">Simpan judul ini</string>
+    <string name="cast_title">Pengisi Suara</string>
+    <string name="share_title">Bagikan</string>
     <string name="bookmark_remove">Hapus dari Tersimpan</string>
 
     <!-- Beranda -->
@@ -153,6 +155,10 @@
 
     <!-- Label preferensi kualitas di layar pemutar -->
     <string name="quality_badge">%1$s · preferensi</string>
+    <string name="speed_title">Kecepatan Putar</string>
+    <string name="server_title">Pilih Server</string>
+    <string name="quality_info_fmt">Preferensi kualitas %1$s (diatur di Setelan → Player). Kualitas akhir mengikuti sumber video.</string>
+    <string name="ok_label">OK</string>
 
     <!-- Kartu lanjutkan menonton di halaman detail -->
     <string name="resume_card_title">Lanjutkan Menonton</string>

@@ -53,6 +53,17 @@
             app:iconSize="18dp"
             app:iconTint="?attr/colorPrimary"
             app:strokeColor="?attr/colorPrimary" />
+
+        <!-- Bagikan judul (teks + tautan via aplikasi lain) -->
+        <ImageButton
+            android:id="@+id/btnShare"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/ui_bg_icon_button"
+            android:contentDescription="@string/share_title"
+            android:src="@drawable/ic_share"
+            app:tint="?attr/colorPrimary" />
     </LinearLayout>
 
     <ScrollView
@@ -169,6 +180,44 @@
                     android:textColor="?attr/colorPrimary"
                     android:textSize="13sp"
                     android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Pengisi suara (lingkaran inisial; ketuk = cari) -->
+            <LinearLayout
+                android:id="@+id/castCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_card"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cast_title"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:clipToPadding="false"
+                    android:overScrollMode="never"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/castRow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
             </LinearLayout>
 
             <!-- Kartu lanjutkan menonton (muncul bila ada riwayat judul ini) -->

@@ -61,9 +61,9 @@ public class PlayerActivity extends AppCompatActivity {
     private View overlay, topbar, btnPrev, btnNext, btnEps, btnDownload, btnFs;
     private LinearLayout sideRail;
     private View videoBox, portraitScroll;
-    private LinearLayout actionRow;
-    private ViewGroup rootFrame;
     private EpisodeAdapter epAdapter;
+    private com.google.android.material.button.MaterialButton
+            btnSpeedP, btnServerP, btnQualityP, btnDownloadP, btnPrevP, btnNextP;
     /** Kunci orientasi via tombol fullscreen (kembali sensor saat dilepas). */
     private int lastOrientationReq =
             android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR;
@@ -186,9 +186,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         // Layar tonton adaptif: potret (info + aksi + daftar) / lanskap (penuh).
         videoBox = findViewById(R.id.videoBox);
-        rootFrame = findViewById(R.id.rootFrame);
         portraitScroll = findViewById(R.id.portraitScroll);
-        actionRow = findViewById(R.id.actionRow);
         infoTitle = findViewById(R.id.infoTitle);
         infoSub = findViewById(R.id.infoSub);
         epListTitle = findViewById(R.id.epListTitle);
@@ -198,6 +196,29 @@ public class PlayerActivity extends AppCompatActivity {
         epList.setLayoutManager(new LinearLayoutManager(this));
         epList.setAdapter(epAdapter);
         findViewById(R.id.btnFs).setOnClickListener(v -> toggleFullscreen());
+
+        // Pil potret berlabel jelas (tap = dialog pilihan, ala Animok).
+        btnSpeedP = findViewById(R.id.btnSpeedP);
+        btnServerP = findViewById(R.id.btnServerP);
+        btnQualityP = findViewById(R.id.btnQualityP);
+        btnDownloadP = findViewById(R.id.btnDownloadP);
+        btnPrevP = findViewById(R.id.btnPrevP);
+        btnNextP = findViewById(R.id.btnNextP);
+        if (btnSpeedP != null) {
+            syncSpeedLabel();
+            btnSpeedP.setOnClickListener(v -> showSpeedSheet());
+        }
+        if (btnServerP != null) btnServerP.setOnClickListener(v -> showServerSheet());
+        if (btnQualityP != null) {
+            syncQualityLabel();
+            btnQualityP.setOnClickListener(v -> showQualityInfo());
+        }
+        if (btnDownloadP != null) {
+            btnDownloadP.setOnClickListener(v -> downloadCurrent());
+        }
+        if (btnPrevP != null) btnPrevP.setOnClickListener(v -> gotoEpisode(epIndex - 1));
+        if (btnNextP != null) btnNextP.setOnClickListener(v -> gotoEpisode(epIndex + 1));
+        findViewById(R.id.btnFsP).setOnClickListener(v -> toggleFullscreen());
         applyOrientation(isLandscape());
 
         // Preferensi pemutar: aspect ratio & label kualitas (Setelan → Player).
@@ -248,13 +269,11 @@ public class PlayerActivity extends AppCompatActivity {
         playerView.setResizeMode(mode);
     }
 
-    /**
-     * Tampilkan kualitas yang dipilih di Setelan sebagai label preferensi.
+    /** Tampilkan kualitas yang dipilih di Setelan sebagai label preferensi.
      * Sumber video menentukan kualitas akhir — label ini tidak mengaku
      * melakukan transcode ulang.
      */
     private void syncQualityLabel() {
-        if (qualityBadge == null) return;
         int q = Prefs.playerQuality(this);
         String label;
         switch (q) {
@@ -264,8 +283,11 @@ public class PlayerActivity extends AppCompatActivity {
             case Prefs.QUALITY_720:
             default:                 label = getString(R.string.quality_720p); break;
         }
-        qualityBadge.setText(getString(R.string.quality_badge, label));
-        qualityBadge.setVisibility(exoStarted ? View.VISIBLE : View.GONE);
+        if (qualityBadge != null) {
+            qualityBadge.setText(getString(R.string.quality_badge, label));
+            qualityBadge.setVisibility(exoStarted ? View.VISIBLE : View.GONE);
+        }
+        if (btnQualityP != null) btnQualityP.setText(label);
     }
 
     @SuppressWarnings("unchecked")
@@ -592,14 +614,12 @@ public class PlayerActivity extends AppCompatActivity {
 
     private void updateRail() {
         railReady = epIndex >= 0 && epUrls.size() > 1;
+        // Rel sisi KHUSUS lanskap; potret memakai pil berlabel di bawah video.
+        if (sideRail != null && !isLandscape()) sideRail.setVisibility(View.GONE);
         if (!railReady || sideRail == null) {
-            // Potret: baris aksi tetap tampil (speed/unduh/server/fs),
-            // hanya navigasi episode yang disembunyikan.
             setNavButtonsVisible(false);
-            if (sideRail != null) {
-                sideRail.setVisibility(isLandscape() ? View.GONE : View.VISIBLE);
-            }
             syncEpList();
+            syncPillStates();
             return;
         }
 
@@ -615,17 +635,29 @@ public class PlayerActivity extends AppCompatActivity {
         setNavButtonsVisible(true);
         updateServerButton();
         syncEpList();
+        syncPillStates();
 
         // Lanskap ala YouTube: rel hanya tampil saat kontrol terlihat.
-        // Potret: rel menjadi baris aksi (selalu tampil). Sebelum Exo jalan
-        // (mode WebView) kontrol tak ada — tampilkan langsung.
-        if (!isLandscape()) {
-            sideRail.setVisibility(View.VISIBLE);
-            return;
-        }
+        // Sebelum Exo jalan (mode WebView) kontrol tak ada — tampilkan langsung.
         boolean controls = !exoStarted
                 || (playerView != null && playerView.isControllerFullyVisible());
         sideRail.setVisibility(controls ? View.VISIBLE : View.GONE);
+    }
+
+    /** Sinkronkan pil potret: label + aktif/rentang sesuai ketersediaan. */
+    private void syncPillStates() {
+        boolean multi = epIndex >= 0 && epUrls.size() > 1;
+        if (btnPrevP != null) {
+            btnPrevP.setEnabled(multi && epIndex > 0);
+            btnPrevP.setAlpha(multi && epIndex > 0 ? 1f : 0.4f);
+        }
+        if (btnNextP != null) {
+            btnNextP.setEnabled(multi && epIndex < epUrls.size() - 1);
+            btnNextP.setAlpha(multi && epIndex < epUrls.size() - 1 ? 1f : 0.4f);
+        }
+        if (btnServerP != null) {
+            btnServerP.setVisibility(mirrorList.size() > 1 ? View.VISIBLE : View.GONE);
+        }
     }
 
     /** Tampilkan/sembunyikan tombol navigasi episode (prev/counter/next/daftar). */
@@ -668,32 +700,14 @@ public class PlayerActivity extends AppCompatActivity {
         }
         moveRail(!landscape);
         updateRail();
+        syncPillStates();
     }
 
-    /** Pindahkan rel: baris aksi (potret) ↔ sisi kanan (lanskap). */
+    /** Rel sisi menetap di root (hanya lanskap); pil potret statis di XML. */
     private void moveRail(boolean portrait) {
         if (sideRail == null) return;
-        android.view.ViewParent cur = sideRail.getParent();
-        if (portrait) {
-            if (cur == actionRow || actionRow == null) return;
-            ((android.view.ViewGroup) cur).removeView(sideRail);
-            sideRail.setOrientation(LinearLayout.HORIZONTAL);
-            actionRow.addView(sideRail);
-        } else {
-            if ((rootFrame != null && cur == rootFrame) || rootFrame == null) {
-                sideRail.setOrientation(LinearLayout.VERTICAL);
-                return;
-            }
-            ((android.view.ViewGroup) cur).removeView(sideRail);
-            sideRail.setOrientation(LinearLayout.VERTICAL);
-            android.widget.FrameLayout.LayoutParams lp =
-                    new android.widget.FrameLayout.LayoutParams(
-                            android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
-                            android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
-                            android.view.Gravity.END | android.view.Gravity.CENTER_VERTICAL);
-            lp.setMarginEnd(dp(8));
-            rootFrame.addView(sideRail, lp);
-        }
+        sideRail.setOrientation(portrait
+                ? LinearLayout.HORIZONTAL : LinearLayout.VERTICAL);
     }
 
     /** Tombol fullscreen: kunci lanskap / kembali mengikuti sensor. */
@@ -776,8 +790,9 @@ public class PlayerActivity extends AppCompatActivity {
 
     /** Label tombol kecepatan ("1×", "1,25×", …). */
     private void syncSpeedLabel() {
-        if (btnSpeed == null) return;
-        btnSpeed.setText(SPEED_LABELS[speedIndex(Prefs.playerSpeed(this))]);
+        String label = SPEED_LABELS[speedIndex(Prefs.playerSpeed(this))];
+        if (btnSpeed != null) btnSpeed.setText(label);
+        if (btnSpeedP != null) btnSpeedP.setText(label);
     }
 
     /** Indeks kecepatan terdekat dengan nilai tersimpan. */
@@ -791,7 +806,25 @@ public class PlayerActivity extends AppCompatActivity {
         return best;
     }
 
-    /** Putar pilihan kecepatan 0,5x–2x; tersimpan dan langsung berlaku. */
+    /** Pilihan kecepatan 0,5x–2x ala Animok; tersimpan dan langsung berlaku. */
+    private void showSpeedSheet() {
+        if (isFinishing() || isDestroyed()) return;
+        int cur = speedIndex(Prefs.playerSpeed(this));
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.speed_title)
+                .setSingleChoiceItems(SPEED_LABELS, cur, (d, which) -> {
+                    Prefs.setPlayerSpeed(this, SPEEDS[which]);
+                    if (player != null && exoStarted) {
+                        player.setPlaybackSpeed(SPEEDS[which]);
+                    }
+                    syncSpeedLabel();
+                    d.dismiss();
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    /** Putar pilihan kecepatan 0,5x–2x (rel lanskap: tap = ganti berikutnya). */
     private void cycleSpeed() {
         int next = (speedIndex(Prefs.playerSpeed(this)) + 1) % SPEEDS.length;
         Prefs.setPlayerSpeed(this, SPEEDS[next]);
@@ -801,16 +834,78 @@ public class PlayerActivity extends AppCompatActivity {
 
     /** Tombol server hanya ada bila episode punya >1 mirror. */
     private void updateServerButton() {
-        if (btnServer == null) return;
         boolean multi = mirrorList.size() > 1;
-        btnServer.setVisibility(multi ? View.VISIBLE : View.GONE);
-        if (multi) btnServer.setText("S" + (mirrorIdx + 1));
+        if (btnServer != null) {
+            btnServer.setVisibility(multi ? View.VISIBLE : View.GONE);
+            if (multi) btnServer.setText("S" + (mirrorIdx + 1));
+        }
+        if (btnServerP != null) {
+            btnServerP.setVisibility(multi ? View.VISIBLE : View.GONE);
+            if (multi) btnServerP.setText(serverLabel(mirrorIdx));
+        }
+    }
+
+    /** Nama server dari host mirror ("Blogger", "Dood", …). */
+    private String serverLabel(int idx) {
+        if (idx < 0 || idx >= mirrorList.size()) return "S" + (idx + 1);
+        String u = mirrorList.get(idx);
+        try {
+            String host = new java.net.URI(u).getHost();
+            if (host == null) return "S" + (idx + 1);
+            if (host.contains("blogger") || host.contains("blogspot")) return "Blogger";
+            if (host.contains("dood")) return "Dood";
+            if (host.contains("gofile")) return "GoFile";
+            if (host.startsWith("www.")) host = host.substring(4);
+            int dot = host.indexOf('.');
+            String name = dot > 0 ? host.substring(0, dot) : host;
+            if (name.isEmpty()) return "S" + (idx + 1);
+            return name.substring(0, 1).toUpperCase() + name.substring(1);
+        } catch (Throwable t) {
+            return "S" + (idx + 1);
+        }
+    }
+
+    /** Daftar server ala Animok ("Choose server"); pilih = muat ulang. */
+    private void showServerSheet() {
+        if (isFinishing() || isDestroyed() || mirrorList.size() <= 1) return;
+        String[] names = new String[mirrorList.size()];
+        for (int i = 0; i < names.length; i++) names[i] = serverLabel(i);
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.server_title)
+                .setSingleChoiceItems(names, mirrorIdx, (d, which) -> {
+                    d.dismiss();
+                    if (which != mirrorIdx) switchToServer(which);
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    /** Info kualitas jujur: preferensi + sumber tunggal (tanpa transcode). */
+    private void showQualityInfo() {
+        if (isFinishing() || isDestroyed()) return;
+        int q = Prefs.playerQuality(this);
+        String label = getString(q == Prefs.QUALITY_360 ? R.string.quality_360p
+                : q == Prefs.QUALITY_480 ? R.string.quality_480p
+                : q == Prefs.QUALITY_1080 ? R.string.quality_1080p
+                : R.string.quality_720p);
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.quality_title)
+                .setMessage(getString(R.string.quality_info_fmt, label))
+                .setPositiveButton(R.string.ok_label, null)
+                .show();
     }
 
     /** Ganti server: muat ulang mirror berikutnya lalu tangkap ulang media. */
     private void switchServer() {
         if (mirrorList.size() <= 1 || isFinishing() || isDestroyed()) return;
-        mirrorIdx = (mirrorIdx + 1) % mirrorList.size();
+        switchToServer((mirrorIdx + 1) % mirrorList.size());
+    }
+
+    /** Muat ulang mirror ke-idx lalu tangkap ulang media. */
+    private void switchToServer(int idx) {
+        if (idx < 0 || idx >= mirrorList.size()
+                || isFinishing() || isDestroyed()) return;
+        mirrorIdx = idx;
 
         capture();
         persist();
