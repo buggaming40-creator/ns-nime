@@ -13,15 +13,18 @@
     android:keepScreenOn="true">
 
     <LinearLayout
+        android:id="@+id/contentRoot"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/window_bg"
         android:orientation="vertical">
 
         <!-- Kotak video: 16:9 di potret, penuh di lanskap -->
         <androidx.media3.ui.AspectRatioFrameLayout
             android:id="@+id/videoBox"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="#000000">
 
             <WebView
                 android:id="@+id/webview"

@@ -723,7 +723,7 @@ public class PlayerActivity extends AppCompatActivity {
      */
     private void watchTopInset() {
         if (videoBox == null) return;
-        portraitTopPx = statusBarHeight() + dp(16);
+        portraitTopPx = statusBarHeight() + dp(8);
         androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(
                 videoBox, (v, insets) -> {
                     int cut = 0, sb = 0;
@@ -736,7 +736,7 @@ public class PlayerActivity extends AppCompatActivity {
                                         .statusBars()).top;
                     } catch (Throwable ignored) {
                     }
-                    int want = Math.max(sb, cut) + dp(16);
+                    int want = Math.max(sb, cut) + dp(8);
                     if (want != portraitTopPx) {
                         portraitTopPx = want;
                         if (!isLandscape()) applyVideoBoxLp();
@@ -748,7 +748,7 @@ public class PlayerActivity extends AppCompatActivity {
 
     /** Nilai ruang atas saat ini (fallback bila listener belum jalan). */
     private int portraitTop() {
-        return portraitTopPx < 0 ? statusBarHeight() + dp(16) : portraitTopPx;
+        return portraitTopPx < 0 ? statusBarHeight() + dp(8) : portraitTopPx;
     }
 
     /** Terapkan ukuran videoBox sesuai orientasi (dipakai ulang listener). */
@@ -763,11 +763,12 @@ public class PlayerActivity extends AppCompatActivity {
             lp.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
             lp.height = android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
         }
-        if (lp instanceof android.widget.LinearLayout.LayoutParams) {
-            ((android.widget.LinearLayout.LayoutParams) lp).topMargin =
-                    landscape ? 0 : portraitTop();
-        }
         videoBox.setLayoutParams(lp);
+        // Strip atas sewarna background (bukan hitam) + video tetap hitam.
+        View contentRoot = findViewById(R.id.contentRoot);
+        if (contentRoot != null) {
+            contentRoot.setPadding(0, landscape ? 0 : portraitTop(), 0, 0);
+        }
     }
 
     /** Tinggi status bar (tetap ada walau disembunyikan imersif). */
