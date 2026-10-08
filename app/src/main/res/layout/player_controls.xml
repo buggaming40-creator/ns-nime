@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Kontrol khusus ExoPlayer/Media3 untuk NsNime.
-  Gaya: pil kaca melayang di bawah (radius 999, ungu-gelap 78%),
-  progres tipis putih, waktu 13sp putih-70%, tombol putar/prev/next putih.
-  Bilah atas TIDAK di sini — memakai topbar overlay sendiri (activity_player).
+  Kontrol khusus ExoPlayer/Media3 untuk NsNime - ala YouTube/AnimeLovers:
+  Kluster TENGAH: prev / putar-jeda besar / next - TERPISAH dari bar durasi.
+  Bar BAWAH: pil kaca berisi posisi + progres + durasi saja.
+  Bilah atas TIDAK di sini - memakai topbar overlay sendiri (activity_player).
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -13,7 +13,45 @@
 
     <!-- Penyangga buffering ditangani PlayerView bawaan (exo_buffering). -->
 
-    <!-- Pil kaca melayang -->
+    <!-- Kluster tengah: prev / putar-jeda besar / next -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@id/exo_prev"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/prev_episode"
+            android:padding="11dp"
+            android:tint="#FFFFFF" />
+
+        <ImageButton
+            android:id="@id/exo_play_pause"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginHorizontal="26dp"
+            android:background="@drawable/ui_bg_player_button"
+            android:contentDescription="@string/play_pause"
+            android:padding="16dp"
+            android:src="@drawable/ic_play"
+            android:tint="#FFFFFF" />
+
+        <ImageButton
+            android:id="@id/exo_next"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/next_episode"
+            android:padding="11dp"
+            android:tint="#FFFFFF" />
+    </LinearLayout>
+
+    <!-- Bar durasi: pil kaca melayang di bawah (posisi + progres + durasi saja) -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,23 +65,14 @@
             android:background="@drawable/player_pill_bg"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="14dp"
-            android:paddingVertical="8dp">
-
-            <ImageButton
-                android:id="@id/exo_play_pause"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/play_pause"
-                android:padding="6dp"
-                android:tint="#FFFFFF" />
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp">
 
             <TextView
                 android:id="@id/exo_position"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="10dp"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="@color/player_text2"
                 android:textSize="13sp" />
@@ -51,7 +80,7 @@
             <androidx.media3.ui.DefaultTimeBar
                 android:id="@id/exo_progress"
                 android:layout_width="0dp"
-                android:layout_height="24dp"
+                android:layout_height="26dp"
                 android:layout_weight="1"
                 android:layout_marginVertical="8dp"
                 app:bar_height="4dp"
@@ -63,29 +92,10 @@
                 android:id="@id/exo_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="10dp"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="@color/player_text2"
                 android:textSize="13sp" />
-
-            <ImageButton
-                android:id="@id/exo_prev"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="6dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/prev_episode"
-                android:padding="8dp"
-                android:tint="#FFFFFF" />
-
-            <ImageButton
-                android:id="@id/exo_next"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/next_episode"
-                android:padding="8dp"
-                android:tint="#FFFFFF" />
         </LinearLayout>
     </FrameLayout>
 </FrameLayout>

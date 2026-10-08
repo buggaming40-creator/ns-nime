@@ -86,7 +86,7 @@ public class HomeFragment extends Fragment {
         emptyIcon.setImageResource(R.drawable.ic_empty_state);
 
         // ---- H-4: grid + baris horizontal ----
-        adapter = new HomeAdapter(this::open);
+        adapter = new HomeAdapter(this::open, this::resume);
         final GridLayoutManager glm = grid();
         glm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override public int getSpanSize(int position) {
@@ -124,6 +124,8 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        // Riwayat bisa berubah setelah kembali dari pemutar — muat ulang kartu.
+        loadContinueWatching();
         if (bannerAdapter != null && bannerAdapter.getItemCount() > 0) {
             auto.removeCallbacks(bannerTick);
             auto.postDelayed(bannerTick, 4500);
@@ -303,6 +305,46 @@ public class HomeFragment extends Fragment {
         i.putExtra("url", item.url);
         i.putExtra("title", item.title);
         i.putExtra("thumb", item.thumb);
+        startActivity(i);
+    }
+
+    /**
+     * Seksi "Lanjutkan Menonton": ambil riwayat (terbaru dulu), buang yang
+     * sudah selesai/tanpa durasi, lalu serahkan ke adapter (maks 10 kartu).
+     */
+    private void loadContinueWatching() {
+        if (!isAdded() || adapter == null) return;
+        final android.content.Context ctx = requireContext();
+        Async.go(() -> new HistoryStore(ctx).all(),
+                new Async.Done<List<HistoryItem>>() {
+            @Override public void ok(List<HistoryItem> items) {
+                if (!isAdded() || adapter == null) return;
+                List<HistoryItem> out = new ArrayList<>();
+                if (items != null) {
+                    for (HistoryItem h : items) {
+                        if (h.posMs > 0 && h.durMs > 0 && !h.finished()) {
+                            out.add(h);
+                            if (out.size() >= 10) break;
+                        }
+                    }
+                }
+                adapter.setContinueWatching(out);
+            }
+
+            @Override public void err(Throwable t) { /* riwayat opsional — senyap */ }
+        });
+    }
+
+    /** Buka pemutar untuk kartu lanjutkan — posisi terakhir dipulihkan. */
+    private void resume(HistoryItem item) {
+        if (getContext() == null) return;
+        Intent i = new Intent(requireContext(), PlayerActivity.class);
+        i.putExtra("epUrl", item.epUrl);
+        i.putExtra("epTitle", item.epTitle);
+        i.putExtra("title", item.title);
+        i.putExtra("thumb", item.thumb);
+        i.putExtra("seriesUrl", item.seriesUrl);
+        i.putExtra("pos", item.finished() ? 0L : item.posMs);
         startActivity(i);
     }
 }

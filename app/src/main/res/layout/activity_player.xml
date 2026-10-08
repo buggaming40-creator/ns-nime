@@ -124,19 +124,6 @@
                     app:tint="#FFFFFF" />
             </LinearLayout>
 
-            <!-- Tombol putar besar di tengah (muncul saat jeda, ala AnimeLovers) -->
-            <ImageButton
-                android:id="@+id/btnCenterPlay"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                android:background="@drawable/player_chip"
-                android:contentDescription="@string/play_pause"
-                android:padding="15dp"
-                android:src="@drawable/ic_play"
-                android:visibility="gone"
-                app:tint="#FFFFFF" />
-
             <!-- Tombol fullscreen di atas video, melayang di atas pil kontrol -->
             <ImageButton
                 android:id="@+id/btnFsOverlay"
@@ -182,8 +169,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingHorizontal="16dp"
-                android:paddingTop="16dp"
+                android:paddingHorizontal="15dp"
+                android:paddingTop="20dp"
                 android:paddingBottom="24dp">
 
                 <TextView

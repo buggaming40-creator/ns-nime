@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Kartu poster untuk baris horizontal (Sedang Tayang / Top Rating): lebar tetap. -->
+<!--
+  Kartu "Lanjutkan Menonton": thumbnail lanskap + chip episode + jam tonton,
+  judul w500, dan bar progres tipis (token AnimeLovers).
+-->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="150dp"
+    android:layout_width="260dp"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
     android:clickable="true"
@@ -21,12 +24,12 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="132dp"
             android:background="@drawable/ui_bg_poster"
             android:clipToOutline="true">
 
             <ImageView
-                android:id="@+id/thumb"
+                android:id="@+id/contThumb"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:contentDescription="@string/app_name"
@@ -34,50 +37,61 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="64dp"
                 android:layout_gravity="bottom"
                 android:background="@drawable/gradient_bottom" />
 
             <TextView
-                android:id="@+id/badge"
+                android:id="@+id/contChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|start"
                 android:layout_margin="8dp"
                 android:background="@drawable/bg_badge"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-semibold"
                 android:maxLines="1"
+                android:maxWidth="160dp"
                 android:paddingHorizontal="8dp"
                 android:paddingVertical="4dp"
                 android:textColor="#FFFFFF"
-                android:textSize="10sp"
-                android:fontFamily="sans-serif-semibold" />
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/contTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="8dp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#CCFFFFFF"
+                android:textSize="10sp" />
         </FrameLayout>
 
         <TextView
-            android:id="@+id/title"
+            android:id="@+id/contTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:maxLines="2"
-            android:minLines="2"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
             android:paddingEnd="12dp"
             android:paddingStart="12dp"
             android:paddingTop="10dp"
             android:textColor="@color/text_primary"
-            android:textSize="13sp"
-            android:fontFamily="sans-serif-medium" />
+            android:textSize="13sp" />
 
-        <TextView
-            android:id="@+id/meta"
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/contProgress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:paddingBottom="12dp"
-            android:paddingEnd="12dp"
-            android:paddingStart="12dp"
-            android:paddingTop="6dp"
-            android:textColor="@color/text_sub"
-            android:textSize="12sp" />
+            android:layout_marginEnd="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp"
+            app:indicatorColor="?attr/colorPrimary"
+            app:trackColor="@color/divider"
+            app:trackCornerRadius="2dp"
+            app:trackThickness="4dp" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -68,9 +68,6 @@ public class PlayerActivity extends AppCompatActivity {
     private int lastOrientationReq =
             android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR;
     private TextView status, titleBar, subtitleBar, modeBadge;
-    /** Tombol putar besar di tengah video (gaya AnimeLovers) + status kontrol. */
-    private View centerPlay;
-    private boolean controlsVisible;
     private TextView infoTitle, infoSub, epListTitle;
     /** Rel episode siap (lebih dari 1 episode) — tampil hanya saat kontrol terlihat. */
     private boolean railReady;
@@ -193,16 +190,6 @@ public class PlayerActivity extends AppCompatActivity {
         View lockBtn = findViewById(R.id.btnLock);
         if (lockBtn != null) lockBtn.setOnClickListener(v -> setLocked(!locked));
 
-        // Putar besar di tengah: tampil saat jeda, ketuk = lanjut.
-        centerPlay = findViewById(R.id.btnCenterPlay);
-        if (centerPlay != null) {
-            centerPlay.setOnClickListener(v -> {
-                if (player != null && exoStarted) {
-                    if (player.isPlaying()) player.pause(); else player.play();
-                }
-            });
-        }
-
         // Daftar episode di bawah video (pengganti komen).
         RecyclerView epList = findViewById(R.id.epList);
         if (epList != null) {
@@ -224,7 +211,6 @@ public class PlayerActivity extends AppCompatActivity {
                 new PlayerView.ControllerVisibilityListener() {
                     @Override
                     public void onVisibilityChanged(int visibility) {
-                        controlsVisible = visibility == View.VISIBLE;
                         if (topbar != null && exoStarted) {
                             // Terkunci: topbar tetap tampil agar gembok terjangkau.
                             topbar.setVisibility(locked ? View.VISIBLE : visibility);
@@ -235,7 +221,6 @@ public class PlayerActivity extends AppCompatActivity {
                                     && visibility == View.VISIBLE
                                     ? View.VISIBLE : View.GONE);
                         }
-                        updateCenterPlay();
                         if (visibility == View.VISIBLE) wireControllerPrevNext();
                     }
                 });
@@ -531,11 +516,6 @@ public class PlayerActivity extends AppCompatActivity {
                         // visibilitas kontrol (lihat onCreate).
                     }
                     if (state == Player.STATE_ENDED) onEpisodeFinished();
-                    updateCenterPlay();
-                }
-
-                @Override public void onIsPlayingChanged(boolean isPlaying) {
-                    updateCenterPlay();
                 }
 
                 @Override public void onPlayerError(androidx.media3.common.PlaybackException e) {
@@ -893,16 +873,6 @@ public class PlayerActivity extends AppCompatActivity {
     };
 
     /** Kunci/buka kunci layar: terkunci = tap video diabaikan, kontrol disembunyi. */
-    /** Tombol putar besar di tengah: tampil hanya saat jeda + kontrol tampil. */
-    private void updateCenterPlay() {
-        if (centerPlay == null) return;
-        boolean show = player != null && exoStarted && !locked
-                && controlsVisible
-                && !player.isPlaying()
-                && player.getPlaybackState() != Player.STATE_BUFFERING;
-        centerPlay.setVisibility(show ? View.VISIBLE : View.GONE);
-    }
-
     private void setLocked(boolean v) {
         if (isFinishing() || isDestroyed()) return;
         locked = v;
@@ -919,7 +889,6 @@ public class PlayerActivity extends AppCompatActivity {
         if (locked && topbar != null && exoStarted) {
             topbar.setVisibility(View.VISIBLE);
         }
-        updateCenterPlay();
         Toast.makeText(this, locked ? R.string.screen_locked
                 : R.string.screen_unlocked, Toast.LENGTH_SHORT).show();
     }

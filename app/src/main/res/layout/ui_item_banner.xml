@@ -32,7 +32,7 @@
         android:paddingBottom="34dp"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:fontFamily="sans-serif-medium" />
 
     <TextView
         android:id="@+id/uiBannerMeta"

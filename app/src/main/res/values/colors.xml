@@ -26,6 +26,11 @@
 
     <color name="text_primary">#0F172A</color>
     <color name="text_secondary">#64748B</color>
+    <!-- Sub-judul kartu: teks utama @54% (token AnimeLovers). -->
+    <color name="text_sub">#8A0F172A</color>
+    <!-- Nav bawah gaya kaca (mode terang): kaca putih 80% + outline 12%. -->
+    <color name="nav_glass_bg">#CCFFFFFF</color>
+    <color name="nav_glass_stroke">#1F000000</color>
     <color name="on_primary">#FFFFFF</color>
 
     <color name="ic_launcher_bg">#121212</color>

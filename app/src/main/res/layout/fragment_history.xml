@@ -75,7 +75,7 @@
                 android:clipToPadding="false"
                 android:paddingEnd="10dp"
                 android:paddingStart="10dp"
-                android:paddingBottom="12dp"
+                android:paddingBottom="96dp"
                 android:scrollbars="vertical" />
 
             <LinearLayout
