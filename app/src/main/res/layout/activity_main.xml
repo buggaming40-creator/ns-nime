@@ -34,6 +34,6 @@
         app:itemIconSize="24dp"
         app:itemIconTint="@color/ui_nav_icon_tint"
         app:itemTextColor="@color/nav_tint"
-        app:labelVisibilityMode="labeled"
+        app:labelVisibilityMode="unlabeled"
         app:menu="@menu/bottom_menu" />
 </FrameLayout>

@@ -124,21 +124,6 @@
                     app:tint="#FFFFFF" />
             </LinearLayout>
 
-            <!-- Tombol fullscreen di atas video, melayang di atas pil kontrol -->
-            <ImageButton
-                android:id="@+id/btnFsOverlay"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="bottom|end"
-                android:layout_marginEnd="4dp"
-                android:layout_marginBottom="78dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/fullscreen"
-                android:padding="12dp"
-                android:src="@drawable/ic_fullscreen"
-                android:visibility="gone"
-                app:tint="#FFFFFF" />
-
             <!-- Kilatan info skip double-tap ("−10 detik" / "+10 detik") -->
             <TextView
                 android:id="@+id/skipFlash"

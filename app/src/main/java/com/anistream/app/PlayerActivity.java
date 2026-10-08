@@ -185,8 +185,9 @@ public class PlayerActivity extends AppCompatActivity {
         if (btnDownloadP != null) {
             btnDownloadP.setOnClickListener(v -> downloadCurrent());
         }
-        View fsOverlay = findViewById(R.id.btnFsOverlay);
-        if (fsOverlay != null) fsOverlay.setOnClickListener(v -> toggleFullscreen());
+        // Fullscreen kini menempel di ujung kanan bar durasi (player_controls).
+        View fsPill = findViewById(R.id.btnFsPill);
+        if (fsPill != null) fsPill.setOnClickListener(v -> toggleFullscreen());
         View lockBtn = findViewById(R.id.btnLock);
         if (lockBtn != null) lockBtn.setOnClickListener(v -> setLocked(!locked));
 
@@ -214,12 +215,6 @@ public class PlayerActivity extends AppCompatActivity {
                         if (topbar != null && exoStarted) {
                             // Terkunci: topbar tetap tampil agar gembok terjangkau.
                             topbar.setVisibility(locked ? View.VISIBLE : visibility);
-                        }
-                        View fsOv = findViewById(R.id.btnFsOverlay);
-                        if (fsOv != null) {
-                            fsOv.setVisibility(!locked && exoStarted
-                                    && visibility == View.VISIBLE
-                                    ? View.VISIBLE : View.GONE);
                         }
                         if (visibility == View.VISIBLE) wireControllerPrevNext();
                     }

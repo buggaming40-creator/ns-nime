@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Kontrol khusus ExoPlayer/Media3 untuk NsNime - ala YouTube/AnimeLovers:
+  Kontrol khusus ExoPlayer/Media3 untuk NsNime - ala YouTube:
   Kluster TENGAH: prev / putar-jeda besar / next - TERPISAH dari bar durasi.
-  Bar BAWAH: pil kaca berisi posisi + progres + durasi saja.
+  Bar BAWAH: pil kaca berisi posisi + progres + durasi + tombol fullscreen
+  di ujung kanan (satu kelompok dengan bar, pola umum pemutar video).
   Bilah atas TIDAK di sini - memakai topbar overlay sendiri (activity_player).
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -96,6 +97,19 @@
                 android:fontFamily="sans-serif-medium"
                 android:textColor="@color/player_text2"
                 android:textSize="13sp" />
+
+            <!-- Fullscreen di ujung kanan bar durasi (bukan mengambang
+                 di samping kluster tengah). -->
+            <ImageButton
+                android:id="@+id/btnFsPill"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="6dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/fullscreen"
+                android:padding="9dp"
+                android:src="@drawable/ic_fullscreen"
+                android:tint="#FFFFFF" />
         </LinearLayout>
     </FrameLayout>
 </FrameLayout>
