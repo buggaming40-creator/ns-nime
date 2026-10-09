@@ -182,7 +182,7 @@ public class SearchFragment extends Fragment {
         emptyBox.setVisibility(View.GONE);
 
         final int seq = ++searchSeq;
-        Async.go(() -> Oploverz.search(q), new Async.Done<List<AnimeItem>>() {
+        Async.go(() -> Sources.search(q), new Async.Done<List<AnimeItem>>() {
             @Override public void ok(List<AnimeItem> items) {
                 // Hasil basi (pencarian lebih baru sudah jalan) — abaikan.
                 if (!isAdded() || seq != searchSeq) return;

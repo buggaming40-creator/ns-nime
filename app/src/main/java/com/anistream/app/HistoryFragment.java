@@ -158,7 +158,7 @@ public class HistoryFragment extends Fragment {
         }
         refresh.setRefreshing(true);
         final String seriesUrl = cur.seriesUrl;
-        Async.go(() -> Oploverz.loadSeriesLite(seriesUrl),
+        Async.go(() -> Sources.loadSeriesLite(seriesUrl),
                 new Async.Done<Oploverz.Series>() {
                     @Override public void ok(Oploverz.Series s) {
                         if (!isAdded()) return;

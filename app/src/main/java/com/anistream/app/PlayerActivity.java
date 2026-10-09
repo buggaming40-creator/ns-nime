@@ -335,7 +335,7 @@ public class PlayerActivity extends AppCompatActivity {
     /** Daftar episode belum ada (dibuka dari Riwayat) — ambil dari halaman series. */
     private void fetchEpisodeList() {
         if (!epUrls.isEmpty() || seriesUrl.isEmpty()) return;
-        Async.go(() -> Oploverz.loadSeries(seriesUrl), new Async.Done<Oploverz.Series>() {
+        Async.go(() -> Sources.loadSeries(seriesUrl), new Async.Done<Oploverz.Series>() {
             @Override public void ok(Oploverz.Series s) {
                 if (s.episodes.isEmpty()) return;
                 epUrls.clear();
@@ -435,7 +435,7 @@ public class PlayerActivity extends AppCompatActivity {
             status.setText(R.string.err_net);
             return;
         }
-        Async.go(() -> Oploverz.loadEpisode(epUrl), new Async.Done<Oploverz.Episode>() {
+        Async.go(() -> Sources.loadEpisode(epUrl), new Async.Done<Oploverz.Episode>() {
             @Override public void ok(Oploverz.Episode ep) {
                 if (!ep.title.isEmpty()) {
                     epTitle = ep.title;
@@ -1114,7 +1114,7 @@ public class PlayerActivity extends AppCompatActivity {
     private void downloadCurrent() {
         if (epUrl == null || epUrl.isEmpty() || isFinishing() || isDestroyed()) return;
         Toast.makeText(this, R.string.loading, Toast.LENGTH_SHORT).show();
-        Async.go(() -> Oploverz.loadEpisode(epUrl),
+        Async.go(() -> Sources.loadEpisode(epUrl),
                 new Async.Done<Oploverz.Episode>() {
                     @Override public void ok(Oploverz.Episode ep) {
                         if (isFinishing() || isDestroyed()) return;

@@ -38,6 +38,11 @@ cd /home/nansoffc/AniStream && ./gradlew assembleDebug   # gradlew TIDAK di PATH
 
 ## Scraper (`Oploverz.java`, situs `oploverz.ch`, tema `dramastream`)
 
+- **Dua sumber**: `Sources.java` = perute; `Oploverz` (utama) + `Otakudesu`
+  (`otakudesu.blog`, cadangan — punya judul lama yang tak dimiliki Oploverz,
+  mis. Black Clover S1). Semua pemanggilan scraper (search/series/episode)
+  WAJIB lewat `Sources.*` — sumber dipilih otomatis dari domain URL.
+  `Otakudesu` memakai model `Oploverz.Series`/`Episode`.
 - `latest()` = halaman depan; `search(q)` = `/?s=`; `loadSeries` (+follow ke
   halaman series bila dibuka dari URL episode); `loadEpisode` = mirror Blogger
   (base64 `<option>`) + tautan GoFile.

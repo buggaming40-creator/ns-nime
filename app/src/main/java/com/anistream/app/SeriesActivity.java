@@ -158,7 +158,7 @@ public class SeriesActivity extends AppCompatActivity {
         }
 
         final String target = url;
-        Async.go(() -> Oploverz.loadSeries(target), new Async.Done<Oploverz.Series>() {
+        Async.go(() -> Sources.loadSeries(target), new Async.Done<Oploverz.Series>() {
             @Override public void ok(Oploverz.Series s) {
                 progress.setVisibility(View.GONE);
 

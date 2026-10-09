@@ -207,7 +207,7 @@ public class HomeFragment extends Fragment {
             List<AnimeItem> found = new ArrayList<>();
             for (AnimeItem a : probe) {
                 try {
-                    Oploverz.Series s = Oploverz.loadSeriesLite(a.url);
+                    Oploverz.Series s = Sources.loadSeriesLite(a.url);
                     String st = s == null || s.status == null ? "" : s.status;
                     if (st.toLowerCase(Locale.ROOT).contains("ongoing")) found.add(a);
                 } catch (Throwable ignored) {
