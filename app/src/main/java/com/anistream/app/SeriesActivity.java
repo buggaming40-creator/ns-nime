@@ -299,6 +299,8 @@ public class SeriesActivity extends AppCompatActivity {
             if (all || rangePass(e)) displayed.add(e);
         }
         if (adapter != null) adapter.submit(new ArrayList<>(displayed));
+        // Tinggi dipaksa = konten penuh (RV dalam ScrollView sering terpotong spek ukur).
+        Utils.fitRecycler(recycler);
     }
 
     /** Nomor tak terbaca selalu lolos; yang terbaca harus masuk rentang. */
@@ -328,6 +330,7 @@ public class SeriesActivity extends AppCompatActivity {
             } else {
                 recycler.setLayoutManager(new LinearLayoutManager(this));
             }
+            Utils.fitRecycler(recycler);
         }
         syncViewButton();
     }

@@ -1,5 +1,10 @@
 package com.anistream.app;
 
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -7,6 +12,30 @@ import java.util.Locale;
 public final class Utils {
 
     private Utils() {}
+
+    /**
+     * Paksa tinggi RecyclerView = seluruh isi konten. Untuk RV berwrap_content
+     * di dalam ScrollView/NestedScrollView, spek ukur induk bisa membatasi
+     * tinggi sehingga hanya 1–2 baris terbaca dan halaman tak bisa digulir ke
+     * daftar lengkap (daftar episode terpotong). Ukur ulang dengan spek
+     * UNSPECIFIED lalu tulis tinggi hasilnya ke layout params.
+     */
+    public static void fitRecycler(final RecyclerView rv) {
+        if (rv == null) return;
+        rv.post(() -> {
+            int w = rv.getWidth();
+            if (w <= 0) return;                       // belum ter-layout; dipanggil ulang oleh pemanggil
+            rv.measure(
+                    View.MeasureSpec.makeMeasureSpec(w, View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            int h = rv.getMeasuredHeight();
+            ViewGroup.LayoutParams lp = rv.getLayoutParams();
+            if (lp != null && lp.height != h) {
+                lp.height = h;
+                rv.setLayoutParams(lp);
+            }
+        });
+    }
 
     /** "baru saja" / "5 menit lalu" / "3 jam lalu" / "2 hari lalu" / tanggal. */
     public static String timeAgo(long ms) {

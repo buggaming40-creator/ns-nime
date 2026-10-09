@@ -76,3 +76,14 @@ cd /home/nansoffc/AniStream && ./gradlew assembleDebug   # gradlew TIDAK di PATH
 - JANGAN percaya "BUILD SUCCESSFUL in 1s": up-to-date check sering bohong di
   sini. Rilis/uji SELALU `--rerun-tasks --no-build-cache`, lalu verifikasi
   simbol baru di dex + timestamp/size APK berubah.
+
+## Jebakan RecyclerView dalam ScrollView
+
+- Halaman seri (`activity_series`) + halaman player (`activity_player`)
+  membungkus RecyclerView `wrap_content` di dalam ScrollView/NestedScrollView:
+  spek ukur induk bisa membatasi tinggi RV sehingga hanya 1–2 baris terbaca,
+  halaman mentok (episode ke-bawah tak tampil — bug "daftar episode tak
+  semua"). Solusi WAJIB: panggil `Utils.fitRecycler(rv)` setiap kali data/
+  tampilan berubah (submit adapter, ganti mode list/grid, rotasi player) —
+  mengukur ulang dengan spek UNSPECIFIED lalu menulis tinggi konten penuh ke
+  layout params. Jangan andalkan wrap_content alami RV di dalam scroll.

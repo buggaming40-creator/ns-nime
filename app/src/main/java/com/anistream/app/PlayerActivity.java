@@ -765,6 +765,8 @@ public class PlayerActivity extends AppCompatActivity {
         }
         applyVideoBoxLp();
         updateRail();
+        // Lebar berubah saat rotasi → tinggi daftar episode harus diukur ulang.
+        if (!landscape) Utils.fitRecycler(findViewById(R.id.epList));
     }
 
     /** Tinggi status bar + poni untuk mode potret (diukur live via insets,
@@ -959,6 +961,8 @@ public class PlayerActivity extends AppCompatActivity {
             items.add(e);
         }
         epAdapter.submit(items);
+        // Tinggi dipaksa = konten penuh (epList dalam NestedScrollView sering terpotong spek ukur).
+        Utils.fitRecycler(findViewById(R.id.epList));
     }
 
     /** Ambil angka episode terakhir dari judul ("… Episode 12" → "12"). */
