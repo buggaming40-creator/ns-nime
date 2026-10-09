@@ -52,6 +52,18 @@ cd /home/nansoffc/AniStream && ./gradlew assembleDebug   # gradlew TIDAK di PATH
   dalam `div.eplister` — hati-hati jangan ikut tersaring jadi item). `loadSeries`
   mengikuti semua halaman (`fillEpRemainingPages`); `loadSeriesLite` tetap
   1 fetch. Jangan kembali ke parse halaman 1 saja (One Piece jadi cuma ~17).
+- **Merge sumber lain (daftar episode terlengkap)**: `Sources.searchExcept(url,q)`
+  mencari di sumber lawan; `SeriesActivity.maybeMergeOtherSource` jalan di latar
+  setelah daftar utama tampil. Kecocokan judul WAJIB persis setelah normalisasi
+  (buang "subtitle indonesia" & tanda kurung) — "Black Clover 2nd Season" tidak
+  boleh merge ke "Black Clover". `mergeEpisodes` dedupe per `epInt`, lalu
+  `buildRangeChips()` + `sortEpisodes()` (sortEpisodes TIDAK rebuild chip).
+  Hasil: One Piece 104 → 483 (Oploverz 1080–1180 ∪ Otakudesu 1–200 & 901–1180;
+  201–900 sudah dihapus di kedua situs). Daftar gabungan ikut ke player via
+  intent `epUrlList`/`epTitleList` — player tidak perlu merge sendiri.
+- **Nomor episode kanonikal**: `.epl-num` Oploverz bisa typo (ep 1091 tertulis
+  "1090" sementara judul & URL benar) → `parseEpisodeItems` SELALU pakai
+  `extractEpisodeNumber(title,url)` bila ada, baru fallback `.epl-num`.
 - Saat install APK ke emulator: **uninstall dulu**, jangan `install -r`
   (operator: `install -r` bisa meninggalkan bug sisa dari data lama).
 - `loadSeriesLite` (tanpa follow) untuk cek status ongoing — hemat fetch.

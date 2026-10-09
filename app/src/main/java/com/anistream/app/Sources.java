@@ -35,6 +35,11 @@ public final class Sources {
         return out;
     }
 
+    /** Cari hanya di sumber LAIN (bukan pemilik `url`) — untuk merge daftar episode. */
+    public static List<AnimeItem> searchExcept(String url, String q) throws Exception {
+        return isOtakudesu(url) ? Oploverz.search(q) : Otakudesu.search(q);
+    }
+
     public static Oploverz.Series loadSeries(String url) throws Exception {
         return isOtakudesu(url) ? Otakudesu.loadSeries(url) : Oploverz.loadSeries(url);
     }

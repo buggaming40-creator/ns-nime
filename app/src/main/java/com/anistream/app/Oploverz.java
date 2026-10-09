@@ -175,7 +175,10 @@ public final class Oploverz {
             e.title = ttl != null ? ttl.text().trim() : a.attr("title");
             if (e.title.isEmpty()) e.title = a.attr("title");
             e.date = dat != null ? dat.text().trim() : "";
-            if (e.num.isEmpty()) e.num = extractEpisodeNumber(e.title, e.url);
+            // Nomor dari judul/URL (kanonikal) menang bila beda dengan epl-num
+            // (typo bawaan situs, mis. ep 1091 tertulis "1090").
+            String auto = extractEpisodeNumber(e.title, e.url);
+            if (!auto.isEmpty()) e.num = auto;
             if (e.num.isEmpty() && e.title.isEmpty()) continue; // bukan item episode
 
             out.add(e);

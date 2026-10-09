@@ -19,7 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -192,6 +195,7 @@ public class SeriesActivity extends AppCompatActivity {
                     empty.setVisibility(TextView.VISIBLE);
                 } else {
                     empty.setVisibility(TextView.GONE);
+                    maybeMergeOtherSource(s);
                 }
             }
 
@@ -202,6 +206,78 @@ public class SeriesActivity extends AppCompatActivity {
                 empty.setVisibility(TextView.VISIBLE);
             }
         });
+    }
+
+    // ------------------------------------------------------- merge sumber lain
+
+    /**
+     * Gabung daftar episode dari sumber LAIN bila judulnya ada di sana (mis.
+     * One Piece: Oploverz cuma simpan ~104 terbaru, Otakudesu punya 1–200 &
+     * 901–1180). Progresif — daftar utama tampil lebih dulu, hasil merge
+     * menyusul lalu daftar + chip rentang diperbarui. Episode yang dibuka
+     * tetap dirute per-URL lewat Sources.
+     */
+    private void maybeMergeOtherSource(Oploverz.Series s) {
+        final String primaryUrl = s.seriesUrl;
+        final String q = s.title;
+        if (primaryUrl.isEmpty() || q.isEmpty()) return;
+        Async.go(() -> {
+            String match = pickSeriesMatch(Sources.searchExcept(primaryUrl, q), q);
+            if (match == null) return null;
+            Oploverz.Series o = Sources.loadSeries(match);
+            return (o == null || o.episodes.isEmpty()) ? null : o;
+        }, new Async.Done<Oploverz.Series>() {
+            @Override public void ok(Oploverz.Series o) {
+                mergeEpisodes(o);
+            }
+
+            @Override public void err(Throwable t) {
+                // sumber lain gagal / judul tak sama → daftar utama tetap
+            }
+        });
+    }
+
+    /** Tautan series dari hasil search yang judulnya sama setelah normalisasi. */
+    private static String pickSeriesMatch(List<AnimeItem> res, String title) {
+        if (res == null) return null;
+        String want = normTitle(title);
+        if (want.isEmpty()) return null;
+        for (AnimeItem it : res) {
+            if (it != null && !it.url.isEmpty() && normTitle(it.title).equals(want)) {
+                return it.url;
+            }
+        }
+        return null;
+    }
+
+    /** "One Piece (Episode 1 – 1180)" → "one piece" (buang imbuhan & tanda baca). */
+    private static String normTitle(String t) {
+        if (t == null) return "";
+        return t.replaceAll("(?i)\\s*subtitle indonesia\\s*$", "")
+                .replaceAll("\\s*\\([^()]*\\)\\s*$", "")
+                .replaceAll("[^0-9a-zA-Z]+", " ")
+                .trim().toLowerCase(Locale.ROOT);
+    }
+
+    /** Tambah episode dari sumber lain yang nomornya belum ada; urut + chip ulang. */
+    private void mergeEpisodes(Oploverz.Series o) {
+        if (o == null || o.episodes.isEmpty() || episodes.isEmpty() || isFinishing()) return;
+        Set<Integer> have = new HashSet<>();
+        for (EpisodeItem e : episodes) have.add(epInt(e.num));
+        boolean added = false;
+        for (EpisodeItem e : o.episodes) {
+            int n = epInt(e.num);
+            if (n > 0 && have.add(n)) { // nomor baru (ep 0 / nomor rusak diabaikan)
+                episodes.add(e);
+                added = true;
+            }
+        }
+        if (!added || isFinishing()) return;
+        buildRangeChips();               // rentang baru (mis. 901–925 …)
+        sortEpisodes();                  // urut + applyRangeFilter + fitRecycler
+        if (epCount != null) {
+            epCount.setText(getString(R.string.episode_count_fmt, episodes.size()));
+        }
     }
 
     // ------------------------------------------------------------------ info
