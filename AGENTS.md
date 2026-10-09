@@ -6,7 +6,8 @@ Petunjuk kerja untuk agen coding di repo ini. Baca sebelum mengubah kode.
 
 ```bash
 cd /home/nansoffc/AniStream && ./gradlew assembleDebug   # gradlew TIDAK di PATH
-/usr/bin/adb -s emulator-5554 install -r app/build/outputs/apk/debug/NsNime-debug.apk
+/usr/bin/adb -s emulator-5554 uninstall com.anistream.app   # uninstall dulu (saran operator)
+/usr/bin/adb -s emulator-5554 install app/build/outputs/apk/debug/NsNime-debug.apk
 /usr/bin/adb -s emulator-5554 shell "am start -n com.anistream.app/.MainActivity"
 ```
 
@@ -46,6 +47,13 @@ cd /home/nansoffc/AniStream && ./gradlew assembleDebug   # gradlew TIDAK di PATH
 - `latest()` = halaman depan; `search(q)` = `/?s=`; `loadSeries` (+follow ke
   halaman series bila dibuka dari URL episode); `loadEpisode` = mirror Blogger
   (base64 `<option>`) + tautan GoFile.
+- **Paginasi episode Oploverz**: daftar episode panjang dipotong situs per
+  ~12 item/halaman + tautan `?ep_page=N` di dalam `.pagination` (masih di
+  dalam `div.eplister` — hati-hati jangan ikut tersaring jadi item). `loadSeries`
+  mengikuti semua halaman (`fillEpRemainingPages`); `loadSeriesLite` tetap
+  1 fetch. Jangan kembali ke parse halaman 1 saja (One Piece jadi cuma ~17).
+- Saat install APK ke emulator: **uninstall dulu**, jangan `install -r`
+  (operator: `install -r` bisa meninggalkan bug sisa dari data lama).
 - `loadSeriesLite` (tanpa follow) untuk cek status ongoing — hemat fetch.
 - Jangan memalsukan data (rating, genre, server). Filter Anime/Donghua =
   client-side dari `meta` (NsNime: tidak ada UI filter).

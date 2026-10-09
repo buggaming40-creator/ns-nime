@@ -119,14 +119,15 @@ public final class Oploverz {
 
     /** Daftar episode untuk sebuah judul. `url` boleh halaman series maupun halaman episode. */
     public static Series loadSeries(String url) throws Exception {
-        Series s = parseSeries(Jsoup.connect(url).userAgent(Net.UA).timeout(20000).get(), url);
+        Document doc = Jsoup.connect(url).userAgent(Net.UA).timeout(20000).get();
+        Series s = parseSeries(doc, url);
+        Document seriesDoc = doc;
 
         // Halaman episode tidak memuat info lengkap (sinopsis/genre) — ikuti
         // tautan series-nya lalu isi semua field yang masih kosong.
         if (!s.seriesUrl.isEmpty() && !samePage(s.seriesUrl, url)) {
-            Series full = parseSeries(
-                    Jsoup.connect(s.seriesUrl).userAgent(Net.UA).timeout(20000).get(),
-                    s.seriesUrl);
+            seriesDoc = Jsoup.connect(s.seriesUrl).userAgent(Net.UA).timeout(20000).get();
+            Series full = parseSeries(seriesDoc, s.seriesUrl);
             if (s.episodes.isEmpty() && !full.episodes.isEmpty()) {
                 s.episodes = full.episodes;
             }
@@ -140,12 +141,84 @@ public final class Oploverz {
             if (s.synopsis.isEmpty()) s.synopsis = full.synopsis;
             if (s.genres.isEmpty()) s.genres.addAll(full.genres);
         }
+        fillEpRemainingPages(s, seriesDoc);
         return s;
     }
 
     /** Versi ringan tanpa follow (cukup untuk cek status ongoing). */
     public static Series loadSeriesLite(String url) throws Exception {
         return parseSeries(Jsoup.connect(url).userAgent(Net.UA).timeout(20000).get(), url);
+    }
+
+    /**
+     * Item episode: halaman series memakai div.eplister (diprioritaskan agar
+     * daftar sidebar tak ikut kecampur), halaman episode memakai div.episodelist
+     * / .listeps. Hasil ditambahkan ke `out`; `seen` untuk dedup antar halaman.
+     */
+    private static void parseEpisodeItems(Document doc, List<EpisodeItem> out, Set<String> seen) {
+        Elements lis = doc.select("div.eplister li");
+        if (lis.isEmpty()) lis = doc.select("div.episodelist li, .listeps li");
+        for (Element li : lis) {
+            // Tautan paginasi (?ep_page=N) ikut tersangkut di dalam eplister.
+            if (li.parent() != null && li.parent().hasClass("page-numbers")) continue;
+            Element a = li.selectFirst("a[href]");
+            if (a == null) continue;
+            EpisodeItem e = new EpisodeItem();
+            e.url = abs(a.attr("href"));
+            if (e.url.isEmpty() || e.url.contains("ep_page") || !seen.add(e.url)) continue;
+
+            Element num = li.selectFirst(".epl-num, .epnum");
+            Element ttl = li.selectFirst(".epl-title, .playinfo h3, h3");
+            Element dat = li.selectFirst(".epl-date, .playinfo span");
+
+            e.num = num != null ? num.text().trim() : "";
+            e.title = ttl != null ? ttl.text().trim() : a.attr("title");
+            if (e.title.isEmpty()) e.title = a.attr("title");
+            e.date = dat != null ? dat.text().trim() : "";
+            if (e.num.isEmpty()) e.num = extractEpisodeNumber(e.title, e.url);
+            if (e.num.isEmpty() && e.title.isEmpty()) continue; // bukan item episode
+
+            out.add(e);
+        }
+    }
+
+    /**
+     * Oploverz memaginasi daftar episode panjang: halaman 1 hanya ~12 episode
+     * terbaru, sisanya lewat `?ep_page=N` (lihat .pagination .page-numbers).
+     * Semua halaman diikut agar daftar lengkap (mis. One Piece). Gagal mengambil
+     * halaman lanjutan → daftar halaman 1 tetap dipakai.
+     */
+    private static void fillEpRemainingPages(Series s, Document firstDoc) {
+        if (s.seriesUrl.isEmpty() || firstDoc == null) return;
+        int max = 1;
+        for (Element a : firstDoc.select(".pagination a[href*=ep_page]")) {
+            String h = a.attr("href");
+            int i = h.indexOf("ep_page=");
+            if (i < 0) continue;
+            String n = h.substring(i + "ep_page=".length()).replaceAll("[^0-9].*$", "");
+            if (n.isEmpty()) continue;
+            try {
+                max = Math.max(max, Integer.parseInt(n));
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        if (max <= 1) return;
+        max = Math.min(max, 40); // pengaman bila tautan tak wajar
+        String sep = s.seriesUrl.contains("?") ? "&" : "?";
+        Set<String> seen = new LinkedHashSet<>();
+        for (EpisodeItem e : s.episodes) seen.add(e.url);
+        try {
+            for (int p = 2; p <= max; p++) {
+                Document d = Jsoup.connect(s.seriesUrl + sep + "ep_page=" + p)
+                        .userAgent(Net.UA).timeout(20000).get();
+                int before = s.episodes.size();
+                parseEpisodeItems(d, s.episodes, seen);
+                if (s.episodes.size() == before) break; // halaman kosong → berhenti
+            }
+        } catch (Exception ignored) {
+            // sisakan daftar halaman 1
+        }
+        s.episodes.sort((x, y) -> compareEpisodeDesc(x.num, y.num));
     }
 
     private static Series parseSeries(Document doc, String pageUrl) {
@@ -233,27 +306,7 @@ public final class Oploverz {
         // ---- daftar episode ------------------------------------------------
         // Halaman series  : div.eplister ul li  -> .epl-num / .epl-title / .epl-date
         // Halaman episode : div.episodelist li  -> h3 / span
-        Set<String> seen = new LinkedHashSet<>();
-        Elements lis = doc.select("div.eplister li, div.episodelist li, .listeps li");
-        for (Element li : lis) {
-            Element a = li.selectFirst("a[href]");
-            if (a == null) continue;
-            EpisodeItem e = new EpisodeItem();
-            e.url = abs(a.attr("href"));
-            if (e.url.isEmpty() || !seen.add(e.url)) continue;
-
-            Element num = li.selectFirst(".epl-num, .epnum");
-            Element ttl = li.selectFirst(".epl-title, .playinfo h3, h3");
-            Element dat = li.selectFirst(".epl-date, .playinfo span");
-
-            e.num = num != null ? num.text().trim() : "";
-            e.title = ttl != null ? ttl.text().trim() : a.attr("title");
-            if (e.title.isEmpty()) e.title = a.attr("title");
-            e.date = dat != null ? dat.text().trim() : "";
-            if (e.num.isEmpty()) e.num = extractEpisodeNumber(e.title, e.url);
-
-            s.episodes.add(e);
-        }
+        parseEpisodeItems(doc, s.episodes, new LinkedHashSet<>());
 
         // Episode terbaru di atas.
         s.episodes.sort((x, y) -> compareEpisodeDesc(x.num, y.num));
