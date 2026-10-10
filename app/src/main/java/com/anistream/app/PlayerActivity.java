@@ -452,6 +452,9 @@ public class PlayerActivity extends AppCompatActivity {
                     fetchEpisodeList();
                 }
                 if (ep.mirrors.isEmpty()) {
+                    // Halaman tanpa player (mis. baris Pembatas) — beri tanda
+                    // dulu sebelum dibuka apa adanya.
+                    status.setText(R.string.ep_unavailable);
                     web.loadUrl(epUrl);          // cadangan: buka halaman episode penuh
                 } else {
                     mirrorList.clear();

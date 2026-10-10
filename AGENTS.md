@@ -59,11 +59,25 @@ cd /home/nansoffc/AniStream && ./gradlew assembleDebug   # gradlew TIDAK di PATH
   boleh merge ke "Black Clover". `mergeEpisodes` dedupe per `epInt`, lalu
   `buildRangeChips()` + `sortEpisodes()` (sortEpisodes TIDAK rebuild chip).
   Hasil: One Piece 104 → 483 (Oploverz 1080–1180 ∪ Otakudesu 1–200 & 901–1180;
-  201–900 sudah dihapus di kedua situs). Daftar gabungan ikut ke player via
+  201–900 sudah dihapus di kedua situs) → 480 setelah filter Pembatas +
+  `dedupeByNum` (v2.9). Daftar gabungan ikut ke player via
   intent `epUrlList`/`epTitleList` — player tidak perlu merge sendiri.
 - **Nomor episode kanonikal**: `.epl-num` Oploverz bisa typo (ep 1091 tertulis
   "1090" sementara judul & URL benar) → `parseEpisodeItems` SELALU pakai
   `extractEpisodeNumber(title,url)` bila ada, baru fallback `.epl-num`.
+- **Baris "Pembatas" Otakudesu (v2.9)**: halaman seri panjang (mis. One Piece)
+  punya baris penanda `"======== Pembatas Episode | Episode X – Y Dalam
+  Proses ======"` (URL `/episode/pembatas-.../`) — halaman TANPA player sama
+  sekali; saat dibuka, player jatuh ke WebView halaman itu dan user melihat
+  banner judol ("iklan judol"). Parser Otakudesu wajib `continue` bila judul
+  mengandung "Pembatas"/"Dalam Proses" ATAU URL mengandung "pembatas-".
+  Tanpa filter ini ep asli (mis. One Piece ep 1) TERBUANG oleh dedupe merge
+  (divider nomor 1 menang duluan) — feed ep1 asli justru valid (prolog
+  Roger, 24:15).
+- **Dedupe by nomor (v2.9)**: situs bisa menautkan ep yang sama 2× dengan URL
+  beda (`?p=12790` vs slug — lolos dedupe-by-URL, jadi baris kembar "1153").
+  `Sources.loadSeries`/`loadSeriesLite` memanggil `dedupeByNum` (per nomor
+  int; saat bentrok pilih URL slug, buang varian `?p=`).
 - Saat install APK ke emulator: **uninstall dulu**, jangan `install -r`
   (operator: `install -r` bisa meninggalkan bug sisa dari data lama).
 - `loadSeriesLite` (tanpa follow) untuk cek status ongoing — hemat fetch.
@@ -96,6 +110,12 @@ cd /home/nansoffc/AniStream && ./gradlew assembleDebug   # gradlew TIDAK di PATH
 - JANGAN percaya "BUILD SUCCESSFUL in 1s": up-to-date check sering bohong di
   sini. Rilis/uji SELALU `--rerun-tasks --no-build-cache`, lalu verifikasi
   simbol baru di dex + timestamp/size APK berubah.
+- Multi-dex (5 file): simbol app ada di `classes3.dex` — verifikasi dengan
+  `unzip -p apk "classes*.dex"` (semua file), bukan `classes.dex` saja.
+- Player menampilkan banner iklan/banner situs + badge "Mode web" = WebView
+  fallback (mirrors kosong / capture gagal / halaman tanpa player) — BUKAN
+  video dari mirror. Diagnosis: `Log.i` sementara di `loadSource` ok/err,
+  `onPageFinished`, `captureMedia`, `fallbackToWeb`, baca `logcat -s Flow`.
 
 ## Jebakan RecyclerView dalam ScrollView
 

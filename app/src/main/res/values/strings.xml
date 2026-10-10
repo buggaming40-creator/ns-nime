@@ -64,6 +64,7 @@
 
     <!-- Daftar / keadaan kosong -->
     <string name="all_episodes">Semua Episode</string>
+    <string name="ep_unavailable">Episode ini belum tersedia</string>
     <string name="episode_count_fmt">Episode (%1$d)</string>
     <string name="synopsis_title">Sinopsis</string>
     <string name="read_more">Lihat Selengkapnya ∨</string>

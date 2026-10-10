@@ -172,6 +172,10 @@ public final class Otakudesu {
             if (!e.url.contains("/episode/")) continue;
             if (e.url.isEmpty() || !seen.add(e.url)) continue;
             e.title = a.text().replaceAll("\\s+", " ").trim();
+            // "======== Pembatas Episode | Episode X – Y Dalam Proses ========" =
+            // penanda rentang, bukan episode (URL-nya pun halaman tanpa player).
+            if (e.title.contains("Pembatas") || e.title.contains("Dalam Proses")
+                    || e.url.contains("pembatas-")) continue;
             Element dat = li.selectFirst(".zeebr");
             e.date = dat != null ? dat.text().trim() : "";
             e.num = episodeNum(e.title, e.url);
