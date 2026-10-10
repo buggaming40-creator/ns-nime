@@ -698,22 +698,46 @@ public class PlayerActivity extends AppCompatActivity {
                     androidx.media3.ui.R.id.exo_prev);
             View next = playerView.findViewById(
                     androidx.media3.ui.R.id.exo_next);
+            // YouTube: kiri = sebelumnya (nomor lebih kecil), kanan = selanjutnya
+            // (lebih besar). Daftar bisa urut naik/turun — arah ikut NOMOR episode,
+            // bukan indeks (urutan terbaru-dulu membuat indeks terbalik dengan nomor).
+            final int back = stepEpisode(-1);
+            final int fwd = stepEpisode(+1);
             if (prev != null) {
                 shrinkExoButton(prev);
-                prev.setOnClickListener(v -> gotoEpisode(epIndex - 1));
-                prev.setEnabled(epIndex > 0);
-                prev.setAlpha(epIndex > 0 ? 1f : 0.3f);
+                prev.setOnClickListener(v -> { if (back >= 0) gotoEpisode(back); });
+                prev.setEnabled(back >= 0);
+                prev.setAlpha(back >= 0 ? 1f : 0.3f);
             }
             if (next != null) {
                 shrinkExoButton(next);
-                next.setOnClickListener(v -> gotoEpisode(epIndex + 1));
-                boolean can = epIndex < epUrls.size() - 1;
-                next.setEnabled(can);
-                next.setAlpha(can ? 1f : 0.3f);
+                next.setOnClickListener(v -> { if (fwd >= 0) gotoEpisode(fwd); });
+                next.setEnabled(fwd >= 0);
+                next.setAlpha(fwd >= 0 ? 1f : 0.3f);
             }
         } catch (Throwable ignored) {
             // Id internal berubah di versi Media3 lain — bukan fatal.
         }
+    }
+
+    /**
+     * Indeks episode tetangga dengan nomor LEBIH KECIL (−1) / LEBIH BESAR (+1);
+     * −1 bila tak ada (mis. di episode 1 tidak ada "sebelumnya").
+     */
+    private int stepEpisode(int dir) {
+        if (epAll.size() != epUrls.size() || epIndex < 0 || epIndex >= epAll.size()) return -1;
+        int cur = epIntOr(epAll.get(epIndex).num, -1);
+        if (cur < 0) return -1;
+        int best = -1, bestGap = Integer.MAX_VALUE;
+        for (int i = 0; i < epAll.size(); i++) {
+            if (i == epIndex) continue;
+            int n = epIntOr(epAll.get(i).num, -1);
+            if (n < 0) continue;
+            if (dir < 0 ? n >= cur : n <= cur) continue;
+            int gap = Math.abs(n - cur);
+            if (gap < bestGap) { bestGap = gap; best = i; }
+        }
+        return best;
     }
 
     /** Sembunyikan tombol kontrol bawaan (rew/ffwd/ gir setelan). */

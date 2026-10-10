@@ -140,6 +140,15 @@ cd /home/nansoffc/AniStream && ./gradlew assembleDebug   # gradlew TIDAK di PATH
   episode, chip, DAN "Sedang ditonton" — andalkan dump untuk bukti teks;
   screenshot sering melampirkan media lama saat dibaca ulang (periksa ulang
   dengan analisis piksel/OCR-less bila ragu).
+- Tombol prev/next controller (exo_prev/exo_next): arah WAJIB ikut NOMOR
+  episode, bukan indeks — daftar default urut terbaru-dulu sehingga indeks±1
+  terbalik dengan nomor (dulu: Ep1 kiri hidup → tekan kiri malah ke Ep2,
+  kanan mati → "gak berfungsi"). Pakai `stepEpisode(dir)` (tetangga nomor
+  terkecil/terbesar via `epAll`); di Ep1 "sebelumnya" = tidak ada (mati),
+  di Ep1180 "selanjutnya" = tidak ada. Posisi ikon sudah YouTube: kiri
+  `|◀`, kanan `▶|`. Uji: Ep1→kanan→Ep2→kiri→Ep1 + ukur alpha ikon dari
+  screenshot (p98 kotak ikon vs bg); jangan ukur saat video sedang loading
+  (hitam) atau animasi kontrol (alpha termutasi mid-flight = salah baca).
 
 ## Jebakan RecyclerView dalam ScrollView
 
