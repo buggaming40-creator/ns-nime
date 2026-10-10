@@ -117,6 +117,30 @@ cd /home/nansoffc/AniStream && ./gradlew assembleDebug   # gradlew TIDAK di PATH
   video dari mirror. Diagnosis: `Log.i` sementara di `loadSource` ok/err,
   `onPageFinished`, `captureMedia`, `fallbackToWeb`, baca `logcat -s Flow`.
 
+## Watch: daftar episode ala halaman seri + penanda berjalan
+
+- Daftar episode di player kini meniru halaman seri: chip rentang
+  (Semua | 1–25 | …), judul "Episode (N)" dari daftar PENUH, baris badge+judul.
+- `SeriesActivity` mengirim `episodes` (PENUH, bukan `displayed` hasil saring
+  chip) ke player via `epUrlList`/`epTitleList` + `epIndex` — supaya chip di
+  player mencakup semua rentang; sebelumnya player cuma mewarisi chip terpilih.
+- `PlayerActivity.buildRangeChips()` memakai flag `rangeChosen`: pilihan
+  pertama OTOMATIS = rentang episode berjalan (mis. nonton ep1 → "1–25"
+  terpilih), pilihan user TIDAK disetel ulang saat `syncEpList` berjalan lagi.
+- Penanda episode berjalan: `EpisodeAdapter.setPlayingUrl(epUrl)` dipanggil di
+  `applyRangeFilter` — baris dapat latar aksen (0x3D colorPrimary) + stroke
+  aksen + badge `bg_badge` + label "Sedang ditonton" (string `now_playing`).
+  Warna bawaan kartu/tanggal disimpan di VH (`defBg`/`defDate`) sekali saat
+  inflate; jangan resolve saat bind (VH bisa sudah ternoda state berjalan).
+- `epNumOf` WAJIB ambil cocok PERTAMA pola `(?i)episode\s*0*(\d+)` (fallback
+  angka pertama), bukan angka TERAKHIR judul: judul "… Episode 1030.5 …" dengan
+  ambil-terakhir → "5" (baris spesial bocor ke rentang 1–25 + badge salah).
+  Parser halaman seri (`extractEpisodeNumber`) juga hasilkan "1030" ✓ konsisten.
+- Verifikasi player tanpa visual: `uiautomator dump` memuat teks judul, baris
+  episode, chip, DAN "Sedang ditonton" — andalkan dump untuk bukti teks;
+  screenshot sering melampirkan media lama saat dibaca ulang (periksa ulang
+  dengan analisis piksel/OCR-less bila ragu).
+
 ## Jebakan RecyclerView dalam ScrollView
 
 - Halaman seri (`activity_series`) + halaman player (`activity_player`)

@@ -62,6 +62,12 @@ public class PlayerActivity extends AppCompatActivity {
     private View overlay, topbar;
     private View videoBox, portraitScroll;
     private EpisodeAdapter epAdapter;
+    // Chip rentang episode + daftar penuh (layar watch meniru halaman seri).
+    private ViewGroup epRangeRow;
+    private LinearLayout epRangeList;
+    private final List<EpisodeItem> epAll = new ArrayList<>();
+    private int rangeStart = -1, rangeEnd = -1;
+    private boolean rangeChosen;
     private com.google.android.material.button.MaterialButton
             btnSpeedP, btnServerP, btnDownloadP;
     /** Kunci orientasi via tombol fullscreen (kembali sensor saat dilepas). */
@@ -199,6 +205,8 @@ public class PlayerActivity extends AppCompatActivity {
             epList.setLayoutManager(new LinearLayoutManager(this));
             epList.setAdapter(epAdapter);
         }
+        epRangeRow = findViewById(R.id.epRangeRow);
+        epRangeList = findViewById(R.id.epRangeList);
         watchTopInset();
         applyOrientation(isLandscape());
 
@@ -953,7 +961,7 @@ public class PlayerActivity extends AppCompatActivity {
                     : getString(R.string.episode_count_fmt, epUrls.size()));
         }
         if (epAdapter == null) return;
-        List<EpisodeItem> items = new ArrayList<>();
+        epAll.clear();
         for (int i = 0; i < epUrls.size(); i++) {
             String t = i < epTitles.size() ? epTitles.get(i) : "";
             EpisodeItem e = new EpisodeItem();
@@ -961,21 +969,143 @@ public class PlayerActivity extends AppCompatActivity {
             e.title = t == null ? "" : t;
             // Pil menampilkan NOMOR episode asli (bukan posisi daftar).
             e.num = epNumOf(e.title, i + 1);
-            items.add(e);
+            epAll.add(e);
         }
-        epAdapter.submit(items);
+        buildRangeChips();       // pilihan chip user TIDAK disetel ulang
+        applyRangeFilter();
+    }
+
+    /** Saring `epAll` sesuai chip rentang + tandai episode yang sedang berjalan. */
+    private void applyRangeFilter() {
+        List<EpisodeItem> shown = new ArrayList<>();
+        boolean all = rangeStart < 0;
+        for (EpisodeItem e : epAll) {
+            if (all || rangePass(e)) shown.add(e);
+        }
+        epAdapter.submit(shown);
+        // Penanda episode berjalan: baris dapat aksen + label "Sedang ditonton".
+        epAdapter.setPlayingUrl(epUrl);
         // Tinggi dipaksa = konten penuh (epList dalam NestedScrollView sering terpotong spek ukur).
         Utils.fitRecycler(findViewById(R.id.epList));
     }
 
-    /** Ambil angka episode terakhir dari judul ("… Episode 12" → "12"). */
+    /** Nomor tak terbaca selalu lolos; yang terbaca harus masuk rentang. */
+    private boolean rangePass(EpisodeItem e) {
+        int n = epIntOr(e == null ? null : e.num, -1);
+        if (n < 0) return true;
+        return n >= rangeStart && n <= rangeEnd;
+    }
+
+    /**
+     * Chip rentang "Semua | 1–25 | 26–50 …" persis halaman seri. Pilihan
+     * pertama otomatis = rentang episode yang sedang ditonton (biar gampang).
+     */
+    private void buildRangeChips() {
+        if (epRangeRow == null || epRangeList == null) return;
+        epRangeList.removeAllViews();
+        if (epAll.size() <= 25) {
+            epRangeRow.setVisibility(View.GONE);
+            rangeStart = -1;
+            rangeEnd = -1;
+            return;
+        }
+        int max = 0;
+        for (EpisodeItem e : epAll) {
+            int n = epIntOr(e.num, -1);
+            if (n > max) max = n;
+        }
+        if (max <= 0) {
+            epRangeRow.setVisibility(View.GONE);
+            rangeStart = -1;
+            rangeEnd = -1;
+            return;
+        }
+        epRangeRow.setVisibility(View.VISIBLE);
+        addRangeChip(getString(R.string.range_all), -1, -1);
+        for (int s = 1; s <= max; s += 25) {
+            addRangeChip(s + "\u2013" + Math.min(s + 24, max), s, Math.min(s + 24, max));
+        }
+        if (!rangeChosen) {
+            // Buka rentang episode berjalan; nomor tak terbaca = "Semua".
+            int cur = epIndex >= 0 && epIndex < epAll.size()
+                    ? epIntOr(epAll.get(epIndex).num, -1) : -1;
+            if (cur > 0) {
+                rangeStart = ((cur - 1) / 25) * 25 + 1;
+                rangeEnd = Math.min(rangeStart + 24, max);
+            } else {
+                rangeStart = -1;
+                rangeEnd = -1;
+            }
+            rangeChosen = true;
+        }
+        syncRangeUi();
+    }
+
+    private void addRangeChip(String label, final int start, final int end) {
+        TextView c = new TextView(this);
+        c.setText(label);
+        c.setTextSize(12);
+        c.setTypeface(null, android.graphics.Typeface.BOLD);
+        c.setPadding(dp(14), dp(7), dp(14), dp(7));
+        c.setTag(new int[]{start, end});
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.setMarginEnd(dp(8));
+        epRangeList.addView(c, lp);
+        c.setOnClickListener(v -> {
+            rangeStart = start;
+            rangeEnd = end;
+            applyRangeFilter();
+            syncRangeUi();
+        });
+    }
+
+    /** Tandai chip terpilih (latar aksen) dan kembalikan sisanya ke pil biasa. */
+    private void syncRangeUi() {
+        if (epRangeList == null) return;
+        int onAccent = com.google.android.material.color.MaterialColors.getColor(
+                epRangeList, com.google.android.material.R.attr.colorOnPrimary);
+        int idle;
+        try {
+            idle = getColor(R.color.text_secondary);
+        } catch (Throwable t) {
+            idle = 0xFF888888;
+        }
+        for (int i = 0; i < epRangeList.getChildCount(); i++) {
+            View child = epRangeList.getChildAt(i);
+            if (!(child instanceof TextView)) continue;
+            TextView c = (TextView) child;
+            int[] tag = (int[]) c.getTag();
+            boolean sel = tag != null && tag[0] == rangeStart && tag[1] == rangeEnd;
+            c.setBackgroundResource(sel ? R.drawable.bg_badge : R.drawable.ui_bg_pill);
+            c.setTextColor(sel ? onAccent : idle);
+        }
+    }
+
+    private static int epIntOr(String num, int fallback) {
+        if (num == null) return fallback;
+        java.util.regex.Matcher m =
+                java.util.regex.Pattern.compile("(\\d+)").matcher(num);
+        if (m.find()) {
+            try { return Integer.parseInt(m.group(1)); } catch (NumberFormatException ignored) {
+            }
+        }
+        return fallback;
+    }
+
+    /**
+     * Ambil nomor episode dari judul ("… Episode 12" → "12"). Pola "Episode N"
+     * dulu + cocok PERTAMA, supaya desimal "1030.5" tetap → "1030" (konsisten
+     * dengan parser halaman seri; angka terakhir bikin ".5" jadi "5").
+     */
     private static String epNumOf(String title, int fallback) {
         if (title != null) {
-            java.util.regex.Matcher m =
-                    java.util.regex.Pattern.compile("(\\d+)").matcher(title);
-            String last = null;
-            while (m.find()) last = m.group(1);
-            if (last != null) return last;
+            java.util.regex.Matcher m = java.util.regex.Pattern
+                    .compile("(?i)episode\\s*0*(\\d+)").matcher(title);
+            if (m.find()) return m.group(1);
+            m = java.util.regex.Pattern.compile("(\\d+)").matcher(title);
+            if (m.find()) return m.group(1);
         }
         return String.valueOf(fallback);
     }

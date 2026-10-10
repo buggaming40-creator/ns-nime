@@ -677,22 +677,24 @@ public class SeriesActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+    // Daftar yang dikirim ke player SELALU penuh (bukan hasil saring chip):
+    // layar watch punya chip rentang sendiri persis halaman seri.
     private int indexOf(String url) {
-        for (int n = 0; n < displayed.size(); n++) {
-            if (url != null && url.equals(displayed.get(n).url)) return n;
+        for (int n = 0; n < episodes.size(); n++) {
+            if (url != null && url.equals(episodes.get(n).url)) return n;
         }
         return -1;
     }
 
     private ArrayList<String> extractUrls() {
         ArrayList<String> out = new ArrayList<>();
-        for (EpisodeItem e : displayed) out.add(e.url);
+        for (EpisodeItem e : episodes) out.add(e.url);
         return out;
     }
 
     private ArrayList<String> extractTitles() {
         ArrayList<String> out = new ArrayList<>();
-        for (EpisodeItem e : displayed) out.add(e.title);
+        for (EpisodeItem e : episodes) out.add(e.title);
         return out;
     }
 
